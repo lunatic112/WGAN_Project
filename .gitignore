@@ -2,6 +2,8 @@
 toolbox/
 Copy of hw11_GAN.ipynb
 dataset/
+savepoint/
+progress_check/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
