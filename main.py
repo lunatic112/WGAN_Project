@@ -23,7 +23,7 @@ gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
 dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
 #dataloader
 dataset=cy()
-dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=10)
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
 
 #turning models into training mode
