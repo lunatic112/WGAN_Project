@@ -6,9 +6,8 @@ import glob
 import torchvision.transforms as transforms
 
 class crypkoFace(Dataset):
-    def __init__(self, fpath=r'.\dataset\faces'):
-
-        self.fnames = glob.glob(fpath+'\*')
+    def __init__(self, fpath=r'./dataset/faces'):
+        self.fnames = glob.glob(fpath+'/*')
         self.num_samples = len(self.fnames)
         
     def __getitem__(self,i):
