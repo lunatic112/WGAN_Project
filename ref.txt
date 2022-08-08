@@ -1,0 +1,14 @@
+WGAN:
+https://arxiv.org/abs/1701.07875
+
+coding:
+http://speech.ee.ntu.edu.tw/~tlkagk/courses_ML20.html (general idea of GAN)
+https://colab.research.google.com/drive/1JYY_HHtVSSOLixZfLwkxiWTRdPHJCS2t (WGAN)
+https://github.com/Zeleni9/pytorch-wgan (DCGAN and WGAN)
+https://arxiv.org/abs/1603.07285 (transposed Convulotional Computing)
+
+dataset(crypko_data collected by some teaching fellow from NTU):
+https://drive.google.com/uc?id=1IGrTr308mGAaCKotpkkm8wTKlWs9Jq-p
+
+anime-face detector:
+https://github.com/nagadomi/lbpcascade_animeface
