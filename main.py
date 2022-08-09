@@ -52,8 +52,9 @@ if __name__ == '__main__':
         G.train()
         D.train()
         
+        w_loss=[]
         for i,data in enumerate(tqdm(dataloader),0):
-            w_loss=[]
+            
 
             #prepare real data and fake data
             real_raw=data.cuda()
