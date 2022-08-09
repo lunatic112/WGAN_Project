@@ -36,12 +36,14 @@ check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
 if __name__ == '__main__': 
     for e in range(max_epoch):
-        w_loss=[]
+        
         #turning models into training mode
         G.train()
         D.train()
         
         for i,data in enumerate(tqdm(dataloader),0):
+            w_loss=[]
+
             #prepare real data and fake data
             real_raw=data.cuda()
             real = Variable(real_raw).cuda()
