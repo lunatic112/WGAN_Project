@@ -69,7 +69,7 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
             g_loss.backward()
             gen_opt.step()
 
-            print(f'\rEpoch [{e+1}/{max_epoch}] {i+1}/{len(dataloader)} -w_loss: {d_loss.item():.4f} g_loss: {g_loss.item():.4f}', end='')
+            print(f'\rEpoch [{e+1}/{max_epoch}] {i+1}/{len(dataloader)} w_loss: {-d_loss.item():.4f} g_loss: {g_loss.item():.4f}', end='')
         
         #normalization
         G.eval()
