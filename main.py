@@ -78,7 +78,7 @@ def main():
             #generate some fake imgs again
             noise=Variable(torch.randn(batch_size, init_channel)).cuda()
             fake=G(noise).cuda()
-            g_loss = D(fake).mean().view(-1)
+            g_loss = -D(fake).mean().view(-1)
             #backward and update
             g_loss.backward()
             gen_opt.step()
@@ -86,16 +86,16 @@ def main():
         #progress check every epoch
         #generate 100 pics from same noise
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-        torchvision.utils.save_image(fake_sample, f'.\\progress_check\\pics\\epoch_{e}.jpg', nrow=8)
+        torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
         #track the Wasserstein loss
         plt.plot(w_loss)
-        plt.savefig(f'.\\progress_check\\w_loss\\epoch_{e}.jpg')
+        plt.savefig(f'./progress_check/w_loss/epoch_{e}.jpg')
         plt.cla()
 
         #save checkpoint every 2 epochs
         if e % 2 == 0:
-            torch.save(G.state_dict(), f'.\\savepoint\\epoch_{e}_G.pth')
-            torch.save(D.state_dict(), f'.\\savepoint\\epoch_{e}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
 
 if __name__ == '__main__':
         main() 
