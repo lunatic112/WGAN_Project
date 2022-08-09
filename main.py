@@ -29,7 +29,7 @@ if __name__ == '__main__':
     mp.set_start_method('spawn')
 
     processes = []
-    for rank in range(8):
+    for rank in range(4):
         p = mp.Process(target=train, args=(dataset, G, D,))
         # We first train the model across `num_processes` processes
         p.start()
