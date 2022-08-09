@@ -24,7 +24,7 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
         G.train()
         D.train()
 
-        for data in tqdm(dataloader):
+        for i, data in enumerate(dataloader,0):
             #prepare real data and fake data
             real_raw=data.cuda()
             real = Variable(real_raw).cuda()
@@ -68,11 +68,14 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
             #backward and update
             g_loss.backward()
             gen_opt.step()
+
+            print(f'\rEpoch [{e+1}/{max_epoch}] {i+1}/{len(dataloader)} w_loss: {w_loss.item():.4f} g_loss: {g_loss.item():.4f}', end='')
         
         #normalization
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
+        print(f' | Save some samples to ./progress_check/pics/')
         #track the Wasserstein loss
         plt.plot(w_loss)
         plt.savefig(f'./progress_check/w_loss/epoch_{e}.jpg')
