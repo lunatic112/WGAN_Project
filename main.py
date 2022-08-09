@@ -26,6 +26,7 @@ if __name__ == '__main__':
     D=model.discriminator().cuda()
     G.share_memory()
     D.share_memory()
+    mp.set_start_method('spawn')
 
     processes = []
     for rank in range(4):
