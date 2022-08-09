@@ -37,7 +37,7 @@ class generator(nn.Module):
         )
     
     def forward(self,x: torch.Tensor):
-        x=x.view(64, 100, 1, 1)
+        x=x.view(-1, 100, 1, 1)
         x=self.l1(x)
         x=self.l2(x)
         x=self.l3(x)

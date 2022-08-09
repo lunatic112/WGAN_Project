@@ -6,45 +6,40 @@ from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
-from train import train
 
 
 
-if __name__ == '__main__': 
-    #hyperparameters
-    init_channel = 100
-    batch_size = 64
-    lr = 1e-3
-    max_epoch = 10
-    diss_train_times=5
-    params_range=0.01
-    #dataset
-    dataset=cy()
-    #models
-    G=model.generator(init_channel).cuda()
-    D=model.discriminator().cuda()
 
-<<<<<<< HEAD
-    processes = []
-    for rank in range(4):
-        p = mp.Process(target=train, args=(dataset, G, D,))
-        # We first train the model across `num_processes` processes
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()   
-=======
+#hyperparameters
+init_channel = 100
+batch_size = 64
+lr = 1e-3
+max_epoch = 10
+diss_train_times=5
+params_range=0.01
+
+#dataloader
+dataset=cy()
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+#models
+G=model.generator(init_channel).cuda()
+D=model.discriminator().cuda()
+#optmizers
+gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
+dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
+
 #turning models into training mode
 G.train()
 D.train()
 
-check_noise = Variable(torch.randn(64, init_channel, 1, 1)).cuda()
+check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
-def main():   
-#training start
+if __name__ == '__main__': 
     for e in range(max_epoch):
         w_loss=[]
-
+        #turning models into training mode
+        G.train()
+        D.train()
         
         for i,data in enumerate(tqdm(dataloader),0):
             #prepare real data and fake data
@@ -78,7 +73,7 @@ def main():
             w_loss.append(-d_loss.detach().item())
                         
             #train the generator for one time
-            #freeze the parameters of discirminator
+            #freeze the grad of discirminator
             for p in D.parameters():
                 p.requires_grad=False
             #neutralize the gradients
@@ -86,25 +81,23 @@ def main():
             #generate some fake imgs again
             noise=Variable(torch.randn(batch_size, init_channel)).cuda()
             fake=G(noise).cuda()
-            g_loss = D(fake).mean().view(-1)
+            g_loss = -D(fake).mean().view(-1)
             #backward and update
             g_loss.backward()
             gen_opt.step()
 
         #progress check every epoch
         #generate 100 pics from same noise
+        G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-        torchvision.utils.save_image(fake_sample, f'.\\progress_check\\pics\\epoch_{e}.jpg', nrow=8)
+        torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
         #track the Wasserstein loss
         plt.plot(w_loss)
-        plt.savefig(f'.\\progress_check\\w_loss\\epoch_{e}.jpg')
+        plt.savefig(f'./progress_check/w_loss/epoch_{e}.jpg')
         plt.cla()
 
         #save checkpoint every 2 epochs
         if e % 2 == 0:
-            torch.save(G.state_dict(), f'.\\savepoint\\epoch_{e}_G.pth')
-            torch.save(D.state_dict(), f'.\\savepoint\\epoch_{e}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
 
-if __name__ == '__main__':
-        main() 
->>>>>>> parent of 1f3108a (Update main.py)
