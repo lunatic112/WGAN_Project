@@ -15,15 +15,14 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
     #dataloader
     dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
-    #turning models into training mode
-    G.train()
-    D.train()
-
     check_noise = Variable(torch.randn(64, init_channel, 1, 1)).cuda()
 
     #training start
     for e in range(max_epoch):
         w_loss=[]
+        #turning models into training mode
+        G.train()
+        D.train()
 
         for data in tqdm(dataloader):
             #prepare real data and fake data
