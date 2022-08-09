@@ -34,6 +34,17 @@ D.train()
 
 check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
+# weight_initialization: important for wgan
+def weight_init(m):
+    class_name=m.__class__.__name__
+    if class_name.find('Conv')!=-1:
+        m.weight.data.normal_(0,0.02)
+    elif class_name.find('Norm')!=-1:
+        m.weight.data.normal_(1.0,0.02)
+D.apply(weight_init)
+G.apply(weight_init)
+
+
 if __name__ == '__main__': 
     for e in range(max_epoch):
         
