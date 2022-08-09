@@ -6,6 +6,7 @@ from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
+import torch.multiprocessing as mp
 from train import train
 
 
@@ -23,6 +24,9 @@ if __name__ == '__main__':
     #models
     G=model.generator(init_channel).cuda()
     D=model.discriminator().cuda()
+    G.share_memory()
+    D.share_memory()
+    mp.set_start_method('spawn')
 
     processes = []
     for rank in range(4):
