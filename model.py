@@ -49,7 +49,7 @@ class generator(nn.Module):
 
 class discriminator(nn.Module):
     def __init__(self):
-        super(discriminator, self.inchanel).__init__()
+        super(discriminator, self).__init__()
         #3*64*64 -> 128*32*32
         self.l1=nn.Sequential(
             nn.Conv2d(3, 128, 5, 2, 2),
