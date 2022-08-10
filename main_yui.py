@@ -43,13 +43,13 @@ G.apply(weight_init)
 
 
 if __name__ == '__main__': 
-    for e in range(max_epoch):
+    for e in tqdm(range(max_epoch)):
         
         #turning models into training mode
         G.train()
         D.train()
         
-        for i,data in enumerate(tqdm(dataloader),0):
+        for i,data in enumerate(dataloader,0):
             
 
             #prepare real data and fake data
