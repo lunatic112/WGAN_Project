@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 #hyperparameters
 init_channel = 100
 batch_size = 64
-lr = 1e-4
+lr = 0.00005
 max_epoch = 50
 diss_train_times=5
 params_range=0.01
