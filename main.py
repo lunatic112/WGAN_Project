@@ -52,7 +52,6 @@ if __name__ == '__main__':
         G.train()
         D.train()
         
-        w_loss=[]
         for i,data in enumerate(tqdm(dataloader),0):
             
 
@@ -83,8 +82,6 @@ if __name__ == '__main__':
                 #backward and update the discriminator
                 d_loss.backward()
                 dis_opt.step()
-            #track the Wasserstein loss
-            w_loss.append(-d_loss.detach().item())
                         
             #train the generator for one time
             #freeze the grad of discirminator
@@ -105,10 +102,6 @@ if __name__ == '__main__':
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
-        #track the Wasserstein loss
-        plt.plot(w_loss)
-        plt.savefig(f'./progress_check/w_loss/epoch_{e}.jpg')
-        plt.cla()
 
         #save checkpoint every 2 epochs
         if e % 2 == 0:
