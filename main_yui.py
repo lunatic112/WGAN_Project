@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import model
+import model_96 as model
 from Yui_data import yuiFace as yui
 from tqdm import tqdm
 import torchvision
