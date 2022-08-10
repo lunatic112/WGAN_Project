@@ -12,7 +12,7 @@ init_channel = 200
 batch_size = 16
 lr = 0.00005
 max_epoch = 500
-diss_train_times=5
+diss_train_times=10
 params_range=0.01
 
 #dataloader
