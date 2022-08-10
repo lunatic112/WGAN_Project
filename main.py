@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 init_channel = 100
 batch_size = 64
 lr = 0.00005
-max_epoch = 50
+max_epoch = 30
 diss_train_times=5
 params_range=0.01
 
