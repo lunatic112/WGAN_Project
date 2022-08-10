@@ -18,7 +18,7 @@ class yuiFace(Dataset):
         #resize to 64*64
         transform = transforms.Compose(
         [transforms.ToPILImage(),
-         transforms.Resize((64, 64)),
+         transforms.Resize((96, 96)),
          transforms.ToTensor(),
          transforms.Normalize(mean=[0.5] * 3, std=[0.5] * 3) ] )
         

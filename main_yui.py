@@ -8,7 +8,7 @@ import torchvision
 import matplotlib.pyplot as plt
 
 #hyperparameters
-init_channel = 100
+init_channel = 200
 batch_size = 16
 lr = 0.00005
 max_epoch = 500
@@ -29,7 +29,7 @@ dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
 G.train()
 D.train()
 
-check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
+check_noise = Variable(torch.randn(64, init_channel, 1, 1)).cuda()
 
 # weight_initialization
 def weight_init(m):
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         #generate 100 pics from same noise
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-        torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
+        torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
 
         #save checkpoint every 2 epochs
         if e+1 % 100 == 0:
