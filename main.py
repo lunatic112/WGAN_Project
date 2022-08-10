@@ -25,7 +25,7 @@ dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
 #optmizers
-gen_opt=torch.optim.SGD(G.parameters(), lr=lr)
+gen_opt=torch.optim.SGD(G.parameters(), lr=1e-3)
 dis_opt=torch.optim.SGD(D.parameters(), lr=lr)
 
 #turning models into training mode
@@ -34,7 +34,7 @@ D.train()
 
 check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
-# weight_initialization: important for wgan
+# weight_initialization
 def weight_init(m):
     class_name=m.__class__.__name__
     if class_name.find('Conv')!=-1:
