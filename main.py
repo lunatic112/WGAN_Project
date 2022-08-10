@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 #hyperparameters
 init_channel = 100
 batch_size = 64
-lr = 1e-3
+lr = 1e-4
 max_epoch = 20
 diss_train_times=5
 params_range=0.01
@@ -25,8 +25,8 @@ dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
 #optmizers
-gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
-dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
+gen_opt=torch.optim.SGD(G.parameters(), lr=lr)
+dis_opt=torch.optim.SGD(D.parameters(), lr=lr)
 
 #turning models into training mode
 G.train()

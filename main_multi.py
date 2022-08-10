@@ -15,7 +15,7 @@ if __name__ == '__main__':
     #hyperparameters
     init_channel = 100
     batch_size = 64
-    lr = 1e-3
+    lr = 1e-4
     max_epoch = 10
     diss_train_times=5
     params_range=0.01

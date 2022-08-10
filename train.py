@@ -8,10 +8,10 @@ import torchvision
 import matplotlib.pyplot as plt
 
 def train(dataset, G, D, max_epoch = 10, init_channel = 100, 
-batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
+batch_size = 64, lr = 1e-4, diss_train_times=5, params_range=0.01):
     #optmizers
-    gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
-    dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
+    gen_opt=torch.optim.SGD(G.parameters(), lr=lr)
+    dis_opt=torch.optim.SGD(D.parameters(), lr=lr)
     #dataloader
     dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
@@ -19,7 +19,7 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
 
     #training start
     for e in range(max_epoch):
-        w_loss=[]
+
         #turning models into training mode
         G.train()
         D.train()
@@ -52,8 +52,6 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
                 #backward and update the discriminator
                 d_loss.backward()
                 dis_opt.step()
-            #track the Wasserstein loss
-            w_loss.append(-d_loss.detach().item())
 
             #train the generator for one time
             #freeze the parameters of discirminator
@@ -76,7 +74,3 @@ batch_size = 64, lr = 1e-3, diss_train_times=5, params_range=0.01):
         fake_sample = (G(check_noise).data + 1) / 2.0     
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
         print(f' | Save some samples to ./progress_check/pics/')
-        #track the Wasserstein loss
-        plt.plot(w_loss)
-        plt.savefig(f'./progress_check/w_loss/epoch_{e}.jpg')
-        plt.cla()

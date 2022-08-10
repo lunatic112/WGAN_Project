@@ -1,5 +1,4 @@
-# python module for read in the crypko dataset made by NTU
-
+# python module for read in the crypko dataset
 import cv2
 from torch.utils.data import Dataset
 import glob
