@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 #hyperparameters
 init_channel = 200
-batch_size = 64
+batch_size = 128
 lr = 0.00005
 max_epoch = 20
 diss_train_times=5
@@ -17,7 +17,7 @@ params_range=0.01
 
 #dataloader
 dataset=cy()
-dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 #models
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
@@ -101,13 +101,13 @@ if __name__ == '__main__':
             #neutralize the gradients
             G.zero_grad()
             #generate some fake imgs again
-            noise=Variable(torch.randn(batch_size, init_channel)).cuda()
+            noise=Variable(torch.randn(bs, init_channel)).cuda()
             fake=G(noise).cuda()
 
             #forced learning trick
             gen_dis=-D(fake)
             indices_gen=gen_dis.sort(dim=0).indices[32:]
-            one_gen=torch.ones(batch_size,1,1,1).cuda()
+            one_gen=torch.ones(bs,1,1,1).cuda()
             one_gen[indices_gen]=0
             gen_dis=gen_dis*one_gen
 
