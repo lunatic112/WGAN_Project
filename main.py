@@ -124,7 +124,7 @@ if __name__ == '__main__':
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
 
         #save checkpoint every 5 epochs
-        if e+1 % 5 == 0:
+        if (e+1) % 5 == 0:
             torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
             torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
 
