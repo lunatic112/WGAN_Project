@@ -75,10 +75,10 @@ if __name__ == '__main__':
 
                 #forced learning trick
                 #sort the discrimination and choose the worst half
-                indices_real=real_loss.sort(dim=0).indices[:32]
+                indices_real=real_dis.sort(dim=0).indices[:32]
                 one_real=torch.ones(64,1,1,1).cuda()
                 one_real[indices_real]=0
-                indices_fake=fake_loss.sort(dim=0).indices[32:]
+                indices_fake=real_dis.sort(dim=0).indices[32:]
                 one_fake=torch.ones(64,1,1,1).cuda()
                 one_fake[indices_fake]=0
                 #select the desired entries from real and fake loss
