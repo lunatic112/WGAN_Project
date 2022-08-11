@@ -7,9 +7,6 @@ from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
 
-
-
-
 #hyperparameters
 init_channel = 200
 batch_size = 64
@@ -75,6 +72,16 @@ if __name__ == '__main__':
                 #discriminate
                 real_dis=D(real.detach())
                 fake_dis=D(fake.detach())
+                #sort the discrimination and choose the worst half
+                indices_real=real_loss.sort(dim=0).indices[:32]
+                one_real=torch.ones(64,1,1,1)
+                one_real[indices_real]=0
+                indices_fake=fake_loss.sort(dim=0).indices[32:]
+                one_fake=torch.ones(64,1,1,1)
+                one_fake[indices_fake]=0
+                #select the desired entries from real and fake loss
+                real_dis=real_dis*one_real
+                fake_dis=fake_dis*one_fake
                 #compute the loss
                 real_loss=real_dis.mean().view(-1)
                 fake_loss=fake_dis.mean().view(-1)
