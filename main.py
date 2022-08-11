@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 #hyperparameters
-init_channel = 100
+init_channel = 200
 batch_size = 64
 lr = 0.00005
 max_epoch = 20
