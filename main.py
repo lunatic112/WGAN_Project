@@ -106,7 +106,7 @@ if __name__ == '__main__':
             #forced learning trick
             gen_dis=-D(fake)
             indices_gen=gen_dis.sort(dim=0).indices[32:]
-            one_gen=torch.ones[64,1,1,1]
+            one_gen=torch.ones(64,1,1,1)
             one_gen[indices_gen]=0
             gen_dis=gen_dis*one_gen
 
