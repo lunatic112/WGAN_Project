@@ -23,7 +23,7 @@ G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
 #optmizers
 gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
-dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
+dis_opt=torch.optim.RMSprop(D.parameters(), lr=2*lr)
 
 #turning models into training mode
 G.train()
