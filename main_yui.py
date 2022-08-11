@@ -66,7 +66,7 @@ if __name__ == '__main__':
             for j in range(diss_train_times):
                 #clipping
                 for p in D.parameters():
-                    p=torch.clamp_(p, min=-params_range, max=params_range)
+                    p.data.clamp_(p, min=-params_range, max=params_range)
                 #neutralize the gradients
                 D.zero_grad()
                 #discriminate
