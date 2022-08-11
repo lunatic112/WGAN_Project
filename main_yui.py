@@ -124,7 +124,7 @@ if __name__ == '__main__':
         print(real_dis.shape)
 
         #save checkpoint every 2 epochs
-        if e+1 % 100 == 0:
+        if (e+1) % 100 == 0:
             torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
             torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
 
