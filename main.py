@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 init_channel = 100
 batch_size = 64
 lr = 0.00005
-max_epoch = 30
+max_epoch = 20
 diss_train_times=5
 params_range=0.01
 
@@ -103,8 +103,8 @@ if __name__ == '__main__':
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
 
-        #save checkpoint every 2 epochs
-        if e+1 % 10 == 0:
+        #save checkpoint every 5 epochs
+        if e+1 % 5 == 0:
             torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
             torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
 
