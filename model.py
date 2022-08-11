@@ -73,7 +73,7 @@ class discriminator(nn.Module):
             nn.BatchNorm2d(1024),
             nn.LeakyReLU(0.2, inplace=True)
         )
-        self.fin=nn.Conv2d(1024, 1, kernel_size=4, stride=1)
+        self.fin=nn.Conv2d(1024, 1, 4)
     
     def forward(self,x):
         x=self.l1(x)
