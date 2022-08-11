@@ -49,8 +49,9 @@ if __name__ == '__main__':
         G.train()
         D.train()
         
-        for i,data in enumerate(tqdm(dataloader),0):
-            
+        for i,data in enumerate(tqdm(dataloader),0):          
+            #record the length of the batch
+            bs=len(data)
 
             #prepare real data and fake data
             real_raw=data.cuda()
@@ -73,13 +74,14 @@ if __name__ == '__main__':
                 real_dis=D(real.detach())
                 fake_dis=D(fake.detach())
 
+
                 #forced learning trick
                 #sort the discrimination and choose the worst half
                 indices_real=real_dis.sort(dim=0).indices[:32]
-                one_real=torch.ones(64,1,1,1).cuda()
+                one_real=torch.ones(bs,1,1,1).cuda()
                 one_real[indices_real]=0
                 indices_fake=real_dis.sort(dim=0).indices[32:]
-                one_fake=torch.ones(64,1,1,1).cuda()
+                one_fake=torch.ones(bs,1,1,1).cuda()
                 one_fake[indices_fake]=0
                 #select the desired entries from real and fake loss
                 real_dis=real_dis*one_real
@@ -106,7 +108,7 @@ if __name__ == '__main__':
             #forced learning trick
             gen_dis=-D(fake)
             indices_gen=gen_dis.sort(dim=0).indices[32:]
-            one_gen=torch.ones(64,1,1,1).cuda()
+            one_gen=torch.ones(bs,1,1,1).cuda()
             one_gen[indices_gen]=0
             gen_dis=gen_dis*one_gen
 
