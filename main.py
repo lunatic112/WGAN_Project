@@ -64,24 +64,27 @@ if __name__ == '__main__':
             for p in D.parameters():
                 p.requires_grad=True
             for j in range(diss_train_times):
+                #neutralize the gradients
+                D.zero_grad()
                 #clipping
                 for p in D.parameters():
                     p=torch.clamp(p, min=-params_range, max=params_range)
-                #neutralize the gradients
-                D.zero_grad()
                 #discriminate
                 real_dis=D(real.detach())
                 fake_dis=D(fake.detach())
+
+                #forced learning trick
                 #sort the discrimination and choose the worst half
                 indices_real=real_loss.sort(dim=0).indices[:32]
-                one_real=torch.ones(64,1,1,1)
+                one_real=torch.ones(64,1,1,1).cuda()
                 one_real[indices_real]=0
                 indices_fake=fake_loss.sort(dim=0).indices[32:]
-                one_fake=torch.ones(64,1,1,1)
+                one_fake=torch.ones(64,1,1,1).cuda()
                 one_fake[indices_fake]=0
                 #select the desired entries from real and fake loss
                 real_dis=real_dis*one_real
                 fake_dis=fake_dis*one_fake
+
                 #compute the loss
                 real_loss=real_dis.mean().view(-1)
                 fake_loss=fake_dis.mean().view(-1)
@@ -99,7 +102,15 @@ if __name__ == '__main__':
             #generate some fake imgs again
             noise=Variable(torch.randn(batch_size, init_channel)).cuda()
             fake=G(noise).cuda()
-            g_loss = -D(fake).mean().view(-1)
+
+            #forced learning trick
+            gen_dis=-D(fake)
+            indices_gen=gen_dis.sort(dim=0).indices[32:]
+            one_gen=torch.ones[64,1,1,1]
+            one_gen[indices_gen]=0
+            gen_dis=gen_dis*one_gen
+
+            g_loss = gen_dis.mean().view(-1)
             #backward and update
             g_loss.backward()
             gen_opt.step()
