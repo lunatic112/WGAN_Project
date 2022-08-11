@@ -121,7 +121,6 @@ if __name__ == '__main__':
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
-        print(real_dis.shape)
 
         #save checkpoint every 2 epochs
         if (e+1) % 100 == 0:
