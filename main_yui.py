@@ -1,18 +1,18 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import model_96 as model
+import model as model
 from Yui_data import yuiFace as yui
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
 
 #hyperparameters
-init_channel = 200
+init_channel = 100
 batch_size = 16
 lr = 0.00005
 max_epoch = 500
-diss_train_times=10
+diss_train_times=5
 params_range=0.01
 
 #dataloader
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             for j in range(diss_train_times):
                 #clipping
                 for p in D.parameters():
-                    p=torch.clamp(p, min=-params_range, max=params_range)
+                    p=torch.clamp_(p, min=-params_range, max=params_range)
                 #neutralize the gradients
                 D.zero_grad()
                 #discriminate
