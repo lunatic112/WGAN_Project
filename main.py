@@ -86,8 +86,8 @@ if __name__ == '__main__':
                 fake_dis=fake_dis*one_fake
 
                 #compute the loss
-                real_loss=real_dis.mean().view(-1)
-                fake_loss=fake_dis.mean().view(-1)
+                real_loss=2*real_dis.mean().view(-1)
+                fake_loss=2*fake_dis.mean().view(-1)
                 d_loss=fake_loss-real_loss
                 #backward and update the discriminator
                 d_loss.backward()
@@ -110,7 +110,7 @@ if __name__ == '__main__':
             one_gen[indices_gen]=0
             gen_dis=gen_dis*one_gen
 
-            g_loss = gen_dis.mean().view(-1)
+            g_loss = 2*gen_dis.mean().view(-1)
             #backward and update
             g_loss.backward()
             gen_opt.step()
