@@ -57,7 +57,7 @@ if __name__ == '__main__':
             real_raw=data.cuda()
             real = Variable(real_raw).cuda()
 
-            noise=Variable(torch.randn((batch_size, init_channel, 1, 1))).cuda()
+            noise=Variable(torch.randn((bs, init_channel, 1, 1))).cuda()
             fake=G(noise).cuda()
 
             #train the discriminator for several times
