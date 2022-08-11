@@ -8,7 +8,7 @@ import torchvision
 import matplotlib.pyplot as plt
 
 #hyperparameters
-init_channel = 100
+init_channel = 200
 batch_size = 40
 lr = 0.00005
 max_epoch = 500
@@ -50,7 +50,8 @@ if __name__ == '__main__':
         D.train()
         
         for i,data in enumerate(dataloader,0):
-            
+            #record the length of the batch
+            bs=len(data)
 
             #prepare real data and fake data
             real_raw=data.cuda()
@@ -72,6 +73,19 @@ if __name__ == '__main__':
                 #discriminate
                 real_dis=D(real.detach())
                 fake_dis=D(fake.detach())
+
+                #forced learning trick
+                #sort the discrimination and choose the worst half
+                indices_real=real_dis.sort(dim=0).indices[:int(bs/2)]
+                one_real=torch.ones(bs,1,1,1).cuda()
+                one_real[indices_real]=0
+                indices_fake=real_dis.sort(dim=0).indices[int(bs/2):]
+                one_fake=torch.ones(bs,1,1,1).cuda()
+                one_fake[indices_fake]=0
+                #select the desired entries from real and fake loss
+                real_dis=real_dis*one_real
+                fake_dis=fake_dis*one_fake
+
                 #compute the loss
                 real_loss=real_dis.mean().view(-1)
                 fake_loss=fake_dis.mean().view(-1)
@@ -89,6 +103,14 @@ if __name__ == '__main__':
             #generate some fake imgs again
             noise=Variable(torch.randn(batch_size, init_channel)).cuda()
             fake=G(noise).cuda()
+
+            #forced learning trick
+            gen_dis=-D(fake)
+            indices_gen=gen_dis.sort(dim=0).indices[32:]
+            one_gen=torch.ones(batch_size,1,1,1).cuda()
+            one_gen[indices_gen]=0
+            gen_dis=gen_dis*one_gen
+
             g_loss = -D(fake).mean().view(-1)
             #backward and update
             g_loss.backward()

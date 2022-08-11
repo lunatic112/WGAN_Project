@@ -74,7 +74,6 @@ if __name__ == '__main__':
                 real_dis=D(real.detach())
                 fake_dis=D(fake.detach())
 
-
                 #forced learning trick
                 #sort the discrimination and choose the worst half
                 indices_real=real_dis.sort(dim=0).indices[:int(bs/2)]
