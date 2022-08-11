@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 #hyperparameters
 init_channel = 100
-batch_size = 16
+batch_size = 40
 lr = 0.00005
 max_epoch = 500
 diss_train_times=5
@@ -99,6 +99,7 @@ if __name__ == '__main__':
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
         torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=8)
+        print(real_dis.shape)
 
         #save checkpoint every 2 epochs
         if e+1 % 100 == 0:
