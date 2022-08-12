@@ -9,7 +9,7 @@ from torchvision.utils import save_image
 
 
 #hyperparameters
-init_channel = 200
+init_channel = 100
 batch_size = 64
 lr = 0.00005
 max_epoch = 20
