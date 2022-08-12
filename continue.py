@@ -5,42 +5,41 @@ import model
 from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
-import matplotlib.pyplot as plt
+import sys
+
+#read in savepoint info
+with open(sys.argv[1], 'r') as f:
+    splst=f.readlines()
+for i in splst:
+    if i[-1]=='\n':
+        i=i[:-1]
 
 #hyperparameters
 init_channel = 200
 batch_size = 64
 lr = 0.00005
-max_epoch = 20
+max_epoch = splst[2]
 diss_train_times=5
 params_range=0.01
-
-#dataloader
-dataset=cy()
-dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-#models
+#model initialization
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
+#load savepoint
+G.load_state_dict(torch.load(splst[0]))
+D.load_state_dict(torch.load(splst[1]))
+
 #optmizers
 gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
 dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
-
 #turning models into training mode
 G.train()
 D.train()
-
+#set a noise for progress check
 check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
-# weight_initialization
-def weight_init(m):
-    class_name=m.__class__.__name__
-    if class_name.find('Conv')!=-1:
-        m.weight.data.normal_(0,0.02)
-    elif class_name.find('Norm')!=-1:
-        m.weight.data.normal_(1.0,0.02)
-D.apply(weight_init)
-G.apply(weight_init)
-
+#dataloader
+dataset=exec(f'{splst[3]}()')
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 
 if __name__ == '__main__': 
     for e in range(max_epoch):
@@ -126,4 +125,3 @@ if __name__ == '__main__':
         if (e+1) % 5 == 0:
             torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
             torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
-
