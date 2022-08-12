@@ -11,9 +11,9 @@ import sys
 with open(sys.argv[1], 'r') as f:
     splst=f.readlines()
 
-for i in splst:
-    if i[-1] == '\n':
-        i=i[:-1]
+for i,lst in enumerate(splst,0):
+    if lst[-1] == '\n':
+        splst[i]=lst[:-1]
 
 #hyperparameters
 init_channel = 200
