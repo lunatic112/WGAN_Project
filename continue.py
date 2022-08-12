@@ -40,6 +40,7 @@ check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
 #dataloader
 dataset=exec(f'{splst[3]}()')
+print(len(dataset))
 dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 
 if __name__ == '__main__': 
