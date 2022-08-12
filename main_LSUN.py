@@ -12,7 +12,7 @@ from torchvision.utils import save_image
 init_channel = 100
 batch_size = 64
 lr = 0.00005
-max_epoch = 20
+max_epoch = 1
 diss_train_times=5
 params_range=0.01
 
@@ -126,15 +126,12 @@ if __name__ == '__main__':
             #backward and update
             g_loss.backward()
             gen_opt.step()
-
-        #progress check every epoch
-        #generate 100 pics from same noise
-        G.eval()
-        fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-        save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
-
-        #save checkpoint every 5 epochs
-        if (e+1) % 5 == 0:
-            torch.save(G.state_dict(), f'./savepoint/epoch_{e}_G.pth')
-            torch.save(D.state_dict(), f'./savepoint/epoch_{e}_D.pth')
-
+            #save checkpoint every 5000 iters
+            if (e+1) % 5000 == 0:
+                torch.save(G.state_dict(), f'./savepoint/iter_{i}_G.pth')
+                torch.save(D.state_dict(), f'./savepoint/iter_{i}_D.pth')
+            #progeress check evey 5000 iters
+            #generate 20 pics from same noise
+            G.eval()
+            fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
+            save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=2)
