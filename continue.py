@@ -13,7 +13,7 @@ with open(sys.argv[1], 'r') as f:
 
 for i in splst:
     if i[-1] == '\n':
-        print(i)
+        print(i[:-1])
 
 #hyperparameters
 init_channel = 200
