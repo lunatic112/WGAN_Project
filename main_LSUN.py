@@ -5,6 +5,7 @@ from torch.autograd import Variable
 import model
 from tqdm import tqdm
 from torchvision.datasets import LSUN
+from torchvision.utils import save_image
 
 
 #hyperparameters
@@ -130,7 +131,7 @@ if __name__ == '__main__':
         #generate 100 pics from same noise
         G.eval()
         fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-        torchvision.utils.save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
+        save_image(fake_sample, f'./progress_check/pics/epoch_{e}.jpg', nrow=10)
 
         #save checkpoint every 5 epochs
         if (e+1) % 5 == 0:
