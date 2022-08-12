@@ -17,7 +17,7 @@ params_range = 0.01
 
 #dataloader
 dataset=cy()
-dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 #models
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
