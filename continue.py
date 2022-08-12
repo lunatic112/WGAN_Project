@@ -10,10 +10,10 @@ import sys
 #read in savepoint info
 with open(sys.argv[1], 'r') as f:
     splst=f.readlines()
-print(splst)
+
 for i in splst:
-    if i[-1]=='\n':
-        i=i[:-1]
+    if i[-1] == '\n':
+        print(i)
 
 #hyperparameters
 init_channel = 200
