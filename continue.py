@@ -43,7 +43,7 @@ dataset=cy()
 dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 
 if __name__ == '__main__': 
-    for e in range(max_epoch):
+    for e in range(int(max_epoch)):
         
         #turning models into training mode
         G.train()
