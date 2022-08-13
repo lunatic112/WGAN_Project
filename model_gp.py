@@ -70,7 +70,7 @@ class discriminator(nn.Module):
         #512*8*8 -> 1024*4*4
         self.l4=nn.Sequential(
             nn.Conv2d(512, 1024, 5, 2, 2),
-            nn.InstanceNorm2d(512, affine=True),
+            nn.InstanceNorm2d(1024, affine=True),
             nn.LeakyReLU(0.2, inplace=True)
         )
         self.fin=nn.Conv2d(1024, 1, 4)
