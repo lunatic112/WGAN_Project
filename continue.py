@@ -146,7 +146,7 @@ if __name__ == '__main__':
         g_loss.backward()
         gen_opt.step()
 
-        #progress check every 500 iters
+        #progress check every 100 iters
         #generate 100 pics from same noise
         if (i_g+1) % 100 == 0:
             G.eval()
@@ -154,6 +154,6 @@ if __name__ == '__main__':
             torchvision.utils.save_image(fake_sample, f'./progress_check/pics/iters_{i_g+current_iter}.jpg', nrow=10)
 
         #save checkpoint every 1000 iters
-        if (i_g+1) % 500 == 0:
+        if (i_g+1) % 1000 == 0:
             torch.save(G.state_dict(), f'./savepoint/iters_{i_g+current_iter}_G.pth')
             torch.save(D.state_dict(), f'./savepoint/iters_{i_g+current_iter}_D.pth')

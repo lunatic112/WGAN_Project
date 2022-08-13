@@ -1,4 +1,4 @@
-./savepoint/iters_4999_G.pth
-./savepoint/iters_4999_D.pth
+./savepoint/iters_14999_G.pth
+./savepoint/iters_14999_D.pth
 20000
 15000
