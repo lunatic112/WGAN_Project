@@ -34,7 +34,7 @@ def get_batch(dataloader=dataloader):
 G.train()
 D.train()
 
-check_noise = Variable(torch.randn(64, init_channel, 1, 1)).cuda()
+check_noise = Variable(torch.randn(30, init_channel, 1, 1)).cuda()
 
 # weight_initialization
 def weight_init(m):
@@ -127,10 +127,10 @@ if __name__ == '__main__':
         if (i_g+1) % 100 == 0:
             G.eval()
             fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/iters_{i_g}.jpg', nrow=10)
+            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/yui_forced/iters_{i_g}.jpg', nrow=3)
 
         #save checkpoint every 500 iters
         if (i_g+1) % 500 == 0:
-            torch.save(G.state_dict(), f'./savepoint/iters_{i_g}_G.pth')
-            torch.save(D.state_dict(), f'./savepoint/iters_{i_g}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/yui_forced/iters_{i_g}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/yui_forced/iters_{i_g}_D.pth')
 
