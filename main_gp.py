@@ -133,13 +133,13 @@ if __name__ == '__main__':
         noise=Variable(torch.randn(batch_size, init_channel)).cuda()
         fake=G(noise).cuda()
         gen_dis=-D(fake)
-        
+        '''
         #forced learning trick
         indices_gen=gen_dis.sort(dim=0).indices[32:]
         one_gen=torch.ones(batch_size,1,1,1).cuda()
         one_gen[indices_gen]=0
         gen_dis=gen_dis*one_gen
-        
+        '''
         g_loss = gen_dis.mean().view(-1)
         #backward and update
         g_loss.backward()
