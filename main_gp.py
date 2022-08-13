@@ -34,7 +34,7 @@ G.train()
 D.train()
 
 check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
-'''
+
 # weight_initialization
 def weight_init(m):
     class_name=m.__class__.__name__
@@ -44,7 +44,7 @@ def weight_init(m):
         m.weight.data.normal_(1.0,0.02)
 D.apply(weight_init)
 G.apply(weight_init)
-'''
+
 #function for gradient penalty
 def calculate_gradient_penalty(real_images, fake_images, lambda_term=lambda_term):
         eta = torch.FloatTensor(batch_size,1,1,1).uniform_(0,1).cuda()
@@ -101,7 +101,7 @@ if __name__ == '__main__':
             #discriminate
             real_dis=D(real.detach())
             fake_dis=D(fake.detach())
-            '''
+            
             #forced learning trick
             #sort the discrimination and choose the worst half
             indices_real=real_dis.sort(dim=0).indices[:int(batch_size/2)]
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             #select the desired entries from real and fake loss
             real_dis=real_dis*one_real
             fake_dis=fake_dis*one_fake
-            '''
+            
             #compute the loss
             real_loss=real_dis.mean().view(-1)
             fake_loss=fake_dis.mean().view(-1)
@@ -133,13 +133,13 @@ if __name__ == '__main__':
         noise=Variable(torch.randn(batch_size, init_channel)).cuda()
         fake=G(noise).cuda()
         gen_dis=-D(fake)
-        '''
+        
         #forced learning trick
         indices_gen=gen_dis.sort(dim=0).indices[32:]
         one_gen=torch.ones(batch_size,1,1,1).cuda()
         one_gen[indices_gen]=0
         gen_dis=gen_dis*one_gen
-        '''
+        
         g_loss = gen_dis.mean().view(-1)
         #backward and update
         g_loss.backward()
@@ -150,10 +150,10 @@ if __name__ == '__main__':
         if (i_g+1) % 100 == 0:
             G.eval()
             fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/iters_{i_g}.jpg', nrow=10)
+            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cy_forced/iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint every 500 iters
         if (i_g+1) % 500 == 0:
-            torch.save(G.state_dict(), f'./savepoint/iters_{i_g}_G.pth')
-            torch.save(D.state_dict(), f'./savepoint/iters_{i_g}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/cy_forced/iters_{i_g}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/cy_forced/iters_{i_g}_D.pth')
 
