@@ -44,7 +44,7 @@ check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
 #dataloader
 dataset=cy()
-dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
 #gradient penalty
 def calculate_gradient_penalty(real_images, fake_images, lambda_term=lambda_term):
