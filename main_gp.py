@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 #hyperparameters
 init_channel = 200
 batch_size = 64
-lr = 0.00005
+lr = 0.00001
 gen_train_times = 5000
 diss_train_times = 5
 params_range = 0.01
-b1 = 0.5
-b2 = 0.999
+b1 = 0
+b2 = 0.9
 lambda_term=10
 
 #dataloader
@@ -150,10 +150,10 @@ if __name__ == '__main__':
         if (i_g+1) % 100 == 0:
             G.eval()
             fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cy_forced/iters_{i_g}.jpg', nrow=10)
+            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint every 500 iters
         if (i_g+1) % 500 == 0:
-            torch.save(G.state_dict(), f'./savepoint/cy_forced/iters_{i_g}_G.pth')
-            torch.save(D.state_dict(), f'./savepoint/cy_forced/iters_{i_g}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/iters_{i_g}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/iters_{i_g}_D.pth')
 
