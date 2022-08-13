@@ -1,4 +1,0 @@
-./savepoint/epoch_19_G.pth
-./savepoint/epoch_19_D.pth
-20
-cy

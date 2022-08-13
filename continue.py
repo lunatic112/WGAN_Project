@@ -24,7 +24,7 @@ params_range=0.01
 gen_train_times = int(splst[2])
 b1 = 0
 b2 = 0.9
-current_iter=splst[3]
+current_iter=int(splst[3])
 #model initialization
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
