@@ -53,6 +53,7 @@ class discriminator(nn.Module):
         #3*64*64 -> 128*32*32
         self.l1=nn.Sequential(
             nn.Conv2d(3, 128, 5, 2, 2),
+            nn.InstanceNorm2d(128, affine=True),
             nn.LeakyReLU(0.2, inplace=True)
         )
         #128*32*32 -> 256*16*16
