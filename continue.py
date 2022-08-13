@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
-from torch.autograd import Variable
-import model
+from torch.autograd import Variable, grad
+import model_gp as model
 from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
@@ -25,6 +25,7 @@ gen_train_times = int(splst[2])
 b1 = 0
 b2 = 0.9
 current_iter=int(splst[3])
+lambda_term=10
 #model initialization
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
