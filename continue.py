@@ -19,10 +19,9 @@ for i,lst in enumerate(splst,0):
 init_channel = 200
 batch_size = 64
 lr = 0.00005
-max_epoch = splst[2]
 diss_train_times=5
 params_range=0.01
-gen_train_times = 10000
+gen_train_times = int(splst[2])
 b1 = 0
 b2 = 0.9
 current_iter=splst[3]

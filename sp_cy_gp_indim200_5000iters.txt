@@ -1,0 +1,4 @@
+./savepoint/iters_4999_G.pth
+./savepoint/iters_4999_D.pth
+10000
+cy
