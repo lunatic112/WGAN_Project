@@ -102,7 +102,7 @@ if __name__ == '__main__':
             #discriminate
             real_dis=D(real.detach())
             fake_dis=D(fake.detach())
-            
+            '''
             #forced learning trick
             #sort the discrimination and choose the worst half
             indices_real=real_dis.sort(dim=0).indices[:int(batch_size/2)]
@@ -114,7 +114,7 @@ if __name__ == '__main__':
             #select the desired entries from real and fake loss
             real_dis=real_dis*one_real
             fake_dis=fake_dis*one_fake
-            
+            '''
             #compute the loss
             real_loss=real_dis.mean().view(-1)
             fake_loss=fake_dis.mean().view(-1)
