@@ -3,7 +3,6 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable, grad
 from kokomi_data import kokomi
 import model_gp as model
-from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
 import sys

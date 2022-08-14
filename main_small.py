@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import model as model
+import model_gp as model
 from kokomi_data import kokomi
 from tqdm import tqdm
 import torchvision
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #hyperparameters
 init_channel = 200
 batch_size = 64
-lr = 0.00005
+lr = 0.0001
 gen_train_times = 5000
 diss_train_times=5
 params_range=0.01
