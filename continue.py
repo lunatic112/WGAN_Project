@@ -18,7 +18,7 @@ for i,lst in enumerate(splst,0):
 #hyperparameters
 init_channel = 200
 batch_size = 64
-lr = 0.0005
+lr = 0.0001
 diss_train_times=5
 params_range=0.01
 gen_train_times = int(splst[2])
