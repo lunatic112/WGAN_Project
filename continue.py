@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable, grad
+from kokomi_data import kokomi
 import model_gp as model
 from crypko_data import crypkoFace as cy
 from tqdm import tqdm
@@ -43,7 +44,7 @@ D.train()
 check_noise = Variable(torch.randn(100, init_channel, 1, 1)).cuda()
 
 #dataloader
-dataset=cy()
+dataset=kokomi()
 dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
 #gradient penalty
