@@ -22,8 +22,8 @@ dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=
 G=model.generator(init_channel).cuda()
 D=model.discriminator().cuda()
 #optmizers
-gen_opt=torch.optim.RMSprop(G.parameters(), lr=lr)
-dis_opt=torch.optim.RMSprop(D.parameters(), lr=lr)
+gen_opt=torch.optim.Adam(G.parameters(), lr=lr)
+dis_opt=torch.optim.Adam(D.parameters(), lr=lr)
 
 def get_batch(dataloader=dataloader):
     while True:
