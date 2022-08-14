@@ -1,4 +1,4 @@
-./savepoint/iters_6999_G.pth
-./savepoint/iters_6999_D.pth
-5000
-7000
+./savepoint/iters_11999_G.pth
+./savepoint/iters_11999_D.pth
+2020
+12000
