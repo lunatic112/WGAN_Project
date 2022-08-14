@@ -127,10 +127,10 @@ if __name__ == '__main__':
         if (i_g+1) % 100 == 0:
             G.eval()
             fake_sample = (G(check_noise).data + 1) / 2.0     #normalization
-            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/yui/iters_{i_g}.jpg', nrow=3)
+            torchvision.utils.save_image(fake_sample, f'./progress_check/pics/iters_{i_g}.jpg', nrow=3)
 
         #save checkpoint every 500 iters
         if (i_g+1) % 500 == 0:
-            torch.save(G.state_dict(), f'./savepoint/yui/iters_{i_g}_G.pth')
-            torch.save(D.state_dict(), f'./savepoint/yui/iters_{i_g}_D.pth')
+            torch.save(G.state_dict(), f'./savepoint/iters_{i_g}_G.pth')
+            torch.save(D.state_dict(), f'./savepoint/iters_{i_g}_D.pth')
 
