@@ -2,21 +2,21 @@ import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import model as model
-from Yui_data import yuiFace as yui
+from kokomi_data import kokomi
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
 
 #hyperparameters
 init_channel = 200
-batch_size = 40
+batch_size = 64
 lr = 0.00005
 gen_train_times = 5000
 diss_train_times=5
 params_range=0.01
 
 #dataloader
-dataset=yui()
+dataset=kokomi()
 dataloader=DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 #models
 G=model.generator(init_channel).cuda()
