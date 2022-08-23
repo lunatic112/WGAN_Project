@@ -149,5 +149,5 @@ class bw_model():
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bw_iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint afterwards
-        torch.save(self.G.state_dict(), f'./savepoint/after_neko_G.pth')
-        torch.save(self.D.state_dict(), f'./savepoint/after_neko_D.pth')
+        torch.save(self.G.state_dict(), f'./savepoint/after_bw_G.pth')
+        torch.save(self.D.state_dict(), f'./savepoint/after_bw_D.pth')
