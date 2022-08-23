@@ -30,9 +30,9 @@ class generator(nn.Module):
             nn.BatchNorm2d(num_features=128),
             nn.ReLU(True)
         )
-        #128*32*32 -> 3*96*96 (image output)
+        #128*32*32 -> 3*64*64 (image output)
         self.fin=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=5, stride=3, padding=1),
+            nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=4, stride=2, padding=1),
             nn.Tanh()
         )
         self.inchanel=inchanel
@@ -52,7 +52,7 @@ class discriminator(nn.Module):
         super(discriminator, self).__init__()
         #3*64*64 -> 128*32*32
         self.l1=nn.Sequential(
-            nn.Conv2d(3, 128, 5, 3, 2),
+            nn.Conv2d(3, 128, 5, 2, 2),
             nn.LeakyReLU(0.2, inplace=True)
         )
         #128*32*32 -> 256*16*16
@@ -73,7 +73,10 @@ class discriminator(nn.Module):
             nn.BatchNorm2d(1024),
             nn.LeakyReLU(0.2, inplace=True)
         )
-        self.fin=nn.Conv2d(1024, 1, kernel_size=4, stride=1)
+        self.fin=nn.Sequential(
+            nn.Conv2d(1024, 1, 4),
+            nn.Sigmoid()
+        )
     
     def forward(self,x):
         x=self.l1(x)
@@ -83,10 +86,3 @@ class discriminator(nn.Module):
         x=self.fin(x)
 
         return x
-
-
-
-
-
-    
-

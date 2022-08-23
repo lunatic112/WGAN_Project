@@ -1,11 +1,10 @@
-# python module for read in the crypko dataset
 import cv2
 from torch.utils.data import Dataset
 import glob
 import torchvision.transforms as transforms
 
-class yuiFace(Dataset):
-    def __init__(self, fpath=r'./dataset/Yui Yuigahama'):
+class bw_data(Dataset):
+    def __init__(self, fpath=r'./dataset/blackwhite/out'):
         self.fnames = glob.glob(fpath+'/*')
         self.num_samples = len(self.fnames)
         
