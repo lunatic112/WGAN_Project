@@ -68,6 +68,7 @@ class cy_model():
         self.G.train()
         self.D.train()
 
+        print("starting training on cy set...")
         for i_g in tqdm(range(self.gen_train_times)):
                 
             #turning models into training mode
