@@ -69,6 +69,7 @@ class bw_model():
         self.D.train()
 
         if __name__ == '__main__': 
+            print("yes")
             for i_g in tqdm(range(self.gen_train_times)):
                 
                 #turning models into training mode
