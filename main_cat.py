@@ -150,3 +150,5 @@ class cat_model():
         #save checkpoint afterwards
         torch.save(self.G.state_dict(), f'./savepoint/after_cat_G.pth')
         torch.save(self.D.state_dict(), f'./savepoint/after_cat_D.pth')
+
+        return [f'./savepoint/after_cat_G.pth', f'./savepoint/after_cat_D.pth']

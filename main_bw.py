@@ -151,3 +151,5 @@ class bw_model():
         #save checkpoint afterwards
         torch.save(self.G.state_dict(), f'./savepoint/after_bw_G.pth')
         torch.save(self.D.state_dict(), f'./savepoint/after_bw_D.pth')
+
+        return [f'./savepoint/after_bw_G.pth', f'./savepoint/after_bw_D.pth']
