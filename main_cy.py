@@ -27,6 +27,7 @@ class cy_model():
         self.dataset=dataset()
         self.dataloader=DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
         #models
+        self.model=model
         self.G=model.generator(self.init_channel).cuda()
         self.D=model.discriminator().cuda()
         #optmizers
