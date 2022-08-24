@@ -11,8 +11,7 @@ import model_dcgan as DCGAN
 #cy->bw->human->cat->bed-> WGANGP
 Net1=cy(model=WGANGP)
 Net2=bw(model=WGANGP)
-#Net3=hf(model=WGANGP)
-#Net4=cat(model=WGANGP)
-#Net5=bd(model=WGANGP)
-#Net5.train(Net4.train(Net3.train(Net2.train(Net1.train()))))
-Net2.train(Net1.train())
+Net3=hf(model=WGANGP)
+Net4=cat(model=WGANGP)
+Net5=bd(model=WGANGP)
+Net5.train(Net4.train(Net3.train(Net2.train(Net1.train()))))
