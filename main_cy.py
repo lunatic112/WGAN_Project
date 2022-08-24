@@ -70,7 +70,6 @@ class cy_model():
 
         print("starting training on cy set...")
         for i_g in tqdm(range(self.gen_train_times)):
-                
             #turning models into training mode
             self.G.train()
             self.D.train()
@@ -143,7 +142,7 @@ class cy_model():
 
             #progress check every 100 iters
             #generate 100 pics from same noise
-            if (i_g+1) % 1000 == 0:
+            if (i_g+1) % 10 == 0:
                 self.G.eval()
                 fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                 torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cy_iters_{i_g}.jpg', nrow=10)

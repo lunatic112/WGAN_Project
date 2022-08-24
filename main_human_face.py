@@ -68,7 +68,7 @@ class human_face_model():
         self.G.train()
         self.D.train()
 
-        print("starting training on cy set...")
+        print("starting training on human_face set...")
         for i_g in tqdm(range(self.gen_train_times)):
                 
             #turning models into training mode
