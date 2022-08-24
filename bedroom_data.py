@@ -4,7 +4,7 @@ import glob
 import torchvision.transforms as transforms
 
 class bedroom(Dataset):
-    def __init__(self, fpath=r'./dataset/lsun_bedroom/lsun_bedroom'):
+    def __init__(self, fpath=r'./dataset/lsun_bedroom/out'):
         self.fnames = glob.glob(fpath+'/*')
         self.num_samples = len(self.fnames)
         

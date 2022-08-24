@@ -5,7 +5,7 @@ import glob
 import torchvision.transforms as transforms
 
 class catFace(Dataset):
-    def __init__(self, fpath=r'./dataset/cat/cat'):
+    def __init__(self, fpath=r'./dataset/cat/out'):
         self.fnames = glob.glob(fpath+'/*')
         self.num_samples = len(self.fnames)
         

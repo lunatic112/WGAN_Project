@@ -4,7 +4,7 @@ import glob
 import torchvision.transforms as transforms
 
 class humanFace(Dataset):
-    def __init__(self, fpath=r'./dataset/human_face/archive'):
+    def __init__(self, fpath=r'./dataset/human_face/out'):
         self.fnames = glob.glob(fpath+'/*')
         self.num_samples = len(self.fnames)
         
