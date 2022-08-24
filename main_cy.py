@@ -3,13 +3,13 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable, grad
 import model_gp as WGANGP
 import model_dcgan as DCGAN
-from blackwhite_data import bw_data as bw
+from crypko_data import crypkoFace as cy
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
 
 class cy_model():
-    def __init__(self, dataset=bw, model=WGANGP) -> None:
+    def __init__(self, dataset=cy, model=WGANGP) -> None:
         #hyperparameters
         self.init_channel = 200
         self.batch_size = 64
