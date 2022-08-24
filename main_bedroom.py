@@ -7,6 +7,7 @@ from bedroom_data import bedroom as bd
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
+import torch.nn as nn
 
 class bedroom_model():
     def __init__(self, dataset=bd, model=WGANGP) -> None:
@@ -20,6 +21,7 @@ class bedroom_model():
         self.b1 = 0
         self.b2 = 0.9
         self.lambda_term=10
+        self.criterion = nn.BCELoss()
 
         #dataloader
         self.dataset=dataset()
@@ -30,6 +32,8 @@ class bedroom_model():
         #optmizers
         self.gen_opt=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(self.b1,self.b2))
         self.dis_opt=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(self.b1,self.b2))
+        self.gen_opt_DC=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
+        self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 
@@ -69,17 +73,96 @@ class bedroom_model():
         self.D.train()
 
         print("starting training on bedroom set...")
-        for i_g in tqdm(range(self.gen_train_times)):
+        if self.model==WGANGP:
+            for i_g in tqdm(range(self.gen_train_times)):
+                    
+                #turning models into training mode
+                self.G.train()
+                self.D.train()
                 
-            #turning models into training mode
-            self.G.train()
-            self.D.train()
-            
-            #enable the gradcomputation of discriminator
-            for p in self.D.parameters():
-                p.requires_grad=True
-            #train the discriminator for several times
-            for i_d in range(self.diss_train_times):
+                #enable the gradcomputation of discriminator
+                for p in self.D.parameters():
+                    p.requires_grad=True
+                #train the discriminator for several times
+                for i_d in range(self.diss_train_times):
+                    #read in a new batch
+                    data=self.get_batch().__next__()
+                    #block short batches
+                    if len(data)!=self.batch_size:
+                        continue
+
+                    #prepare real data and fake data
+                    real_raw=data.cuda()
+                    real = Variable(real_raw).cuda()
+                    noise=Variable(torch.randn((self.batch_size, self.init_channel, 1, 1))).cuda()
+                    fake=self.G(noise).cuda()
+
+                    #neutralize the gradients
+                    self.D.zero_grad()
+                    #discriminate
+                    real_dis=self.D(real.detach())
+                    fake_dis=self.D(fake.detach())
+                    '''  
+                    #forced learning trick
+                    #sort the discrimination and choose the worst half
+                    indices_real=real_dis.sort(dim=0).indices[:int(self.batch_size/2)]
+                    one_real=torch.ones(self.batch_size,1,1,1).cuda()
+                    one_real[indices_real]=0
+                    indices_fake=real_dis.sort(dim=0).indices[int(self.batch_size/2):]
+                    one_fake=torch.ones(self.batch_size,1,1,1).cuda()
+                    one_fake[indices_fake]=0
+                    #select the desired entries from real and fake loss
+                    real_dis=real_dis*one_real
+                    fake_dis=fake_dis*one_fake
+                    '''
+                    #compute the loss
+                    real_loss=real_dis.mean().view(-1)
+                    fake_loss=fake_dis.mean().view(-1)
+                    gp=self.calculate_gradient_penalty(real, fake)
+                    d_loss=fake_loss-real_loss+gp
+                    #backward and update the discriminator
+                    d_loss.backward()
+                    self.dis_opt.step()
+                                    
+                #train the generator for one time
+                #freeze the grad of discirminator
+                for p in self.D.parameters():
+                    p.requires_grad=False
+                #neutralize the gradients
+                self.G.zero_grad()
+                #generate some fake imgs for generator training
+                noise=Variable(torch.randn(self.batch_size, self.init_channel)).cuda()
+                fake=self.G(noise).cuda()
+                gen_dis=-self.D(fake)
+                '''
+                    #forced learning trick
+                    indices_gen=gen_dis.sort(dim=0).indices[32:]
+                    one_gen=torch.ones(batch_size,1,1,1).cuda()
+                    one_gen[indices_gen]=0
+                    gen_dis=gen_dis*one_gen
+                '''
+                g_loss = gen_dis.mean().view(-1)
+                #backward and update
+                g_loss.backward()
+                self.gen_opt.step()
+
+                #progress check every 1000 iters
+                #generate 100 pics from same noise
+                if (i_g+1) % 1000 == 0:
+                    self.G.eval()
+                    fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bd_iters_{i_g}.jpg', nrow=10)
+        elif self.model==DCGAN:
+            for i_g in tqdm(range(self.gen_train_times)):
+                    
+                #turning models into training mode
+                self.G.train()
+                self.D.train()
+                
+                #enable the gradcomputation of discriminator
+                for p in self.D.parameters():
+                    p.requires_grad=True
+                #train the discriminator for one time
                 #read in a new batch
                 data=self.get_batch().__next__()
                 #block short batches
@@ -97,7 +180,7 @@ class bedroom_model():
                 #discriminate
                 real_dis=self.D(real.detach())
                 fake_dis=self.D(fake.detach())
-                    
+                '''
                 #forced learning trick
                 #sort the discrimination and choose the worst half
                 indices_real=real_dis.sort(dim=0).indices[:int(self.batch_size/2)]
@@ -109,44 +192,46 @@ class bedroom_model():
                 #select the desired entries from real and fake loss
                 real_dis=real_dis*one_real
                 fake_dis=fake_dis*one_fake
-                 
+                '''
+                # label        
+                r_label = torch.ones((self.batch_size)).cuda()
+                f_label = torch.zeros((self.batch_size)).cuda()
                 #compute the loss
-                real_loss=real_dis.mean().view(-1)
-                fake_loss=fake_dis.mean().view(-1)
-                gp=self.calculate_gradient_penalty(real, fake)
-                d_loss=fake_loss-real_loss+gp
+                r_loss = self.criterion(real_dis, r_label)
+                f_loss = self.criterion(fake_dis, f_label)
+                d_loss = (r_loss + f_loss) / 2
                 #backward and update the discriminator
                 d_loss.backward()
-                self.dis_opt.step()
-                                
-            #train the generator for one time
-            #freeze the grad of discirminator
-            for p in self.D.parameters():
-                p.requires_grad=False
-            #neutralize the gradients
-            self.G.zero_grad()
-            #generate some fake imgs for generator training
-            noise=Variable(torch.randn(self.batch_size, self.init_channel)).cuda()
-            fake=self.G(noise).cuda()
-            gen_dis=-self.D(fake)
-            '''
-                #forced learning trick
-                indices_gen=gen_dis.sort(dim=0).indices[32:]
-                one_gen=torch.ones(batch_size,1,1,1).cuda()
-                one_gen[indices_gen]=0
-                gen_dis=gen_dis*one_gen
-            '''
-            g_loss = gen_dis.mean().view(-1)
-            #backward and update
-            g_loss.backward()
-            self.gen_opt.step()
+                self.dis_opt_DC.step()
+                                    
+                #train the generator for one time
+                #freeze the grad of discirminator
+                for p in self.D.parameters():
+                    p.requires_grad=False
+                #neutralize the gradients
+                self.G.zero_grad()
+                #generate some fake imgs for generator training
+                noise=Variable(torch.randn(self.batch_size, self.init_channel)).cuda()
+                fake=self.G(noise).cuda()
+                gen_dis=-self.D(fake)
+                '''
+                    #forced learning trick
+                    indices_gen=gen_dis.sort(dim=0).indices[32:]
+                    one_gen=torch.ones(batch_size,1,1,1).cuda()
+                    one_gen[indices_gen]=0
+                    gen_dis=gen_dis*one_gen
+                '''
+                g_loss = self.criterion(gen_dis, r_label)
+                #backward and update
+                g_loss.backward()
+                self.gen_opt_DC.step()
 
-            #progress check every 100 iters
-            #generate 100 pics from same noise
-            if (i_g+1) % 1000 == 0:
-                self.G.eval()
-                fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
-                torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bd_iters_{i_g}.jpg', nrow=10)
+                #progress check every 1000 iters
+                #generate 100 pics from same noise
+                if (i_g+1) % 1000 == 0:
+                    self.G.eval()
+                    fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bd_iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint afterwards
         torch.save(self.G.state_dict(), f'./savepoint/after_bd_G.pth')
