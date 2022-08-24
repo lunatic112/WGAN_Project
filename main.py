@@ -8,8 +8,10 @@ from main_human_face import human_face_model as hf
 import model_gp as WGANGP
 import model_dcgan as DCGAN
 
-#bw->cy->cat WGANGP
-Net1=bw(model=WGANGP)
-Net2=cy(model=WGANGP)
-Net3=cat(model=WGANGP)
-Net3.train(savepoint=Net2.train(savepoint=Net1.train()))
+#cy->bw->human->cat->bed-> WGANGP
+Net1=cy(model=WGANGP)
+Net2=bw(model=WGANGP)
+Net3=hf(model=WGANGP)
+Net4=cat(model=WGANGP)
+Net5=bd(model=WGANGP)
+Net5.train(Net4.train(Net3.train(Net2.train(Net1.train()))))
