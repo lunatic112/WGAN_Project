@@ -171,7 +171,7 @@ class cy_model():
                     continue
 
                 #prepare real data and fake data
-                real_raw=data.cuda()
+                real_raw=data
                 real = Variable(real_raw).cuda()
                 noise=Variable(torch.randn((self.batch_size, self.init_channel, 1, 1))).cuda()
                 fake=self.G(noise).cuda()
