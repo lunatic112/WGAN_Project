@@ -9,7 +9,7 @@ import model_gp as WGANGP
 import model_dcgan as DCGAN
 
 #cy->bw->human->cat->bed-> WGANGP
-model=DCGAN
+model=WGANGP
 Net1=cy(model=model)
 Net2=bw(model=model)
 Net3=hf(model=model)
