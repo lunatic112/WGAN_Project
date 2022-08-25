@@ -166,9 +166,9 @@ class cy_model():
                 #train the discriminator for one time
                 #read in a new batch
                 data=self.get_batch().__next__()
+                print((data != data).mean())
                 #block short batches
                 if len(data)!=self.batch_size:
-                    print((data != data).mean())
                     continue
 
                 #prepare real data and fake data
