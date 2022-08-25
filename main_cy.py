@@ -178,7 +178,7 @@ class cy_model():
                 fake=self.G(noise).cuda()
 
                 """ Train D """
-                z = Variable(torch.randn(self.batch_size, 100)).cuda()
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 r_imgs = Variable(data).cuda()
                 f_imgs = self.G(z)
 
@@ -202,7 +202,7 @@ class cy_model():
 
                 """ train G """
                 # leaf
-                z = Variable(torch.randn(self.batch_size, 100)).cuda()
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 f_imgs = self.G(z)
 
                 # dis
