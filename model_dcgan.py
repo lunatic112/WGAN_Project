@@ -84,5 +84,6 @@ class discriminator(nn.Module):
         x=self.l3(x)
         x=self.l4(x)
         x=self.fin(x)
+        x=x.view(-1)
 
         return x

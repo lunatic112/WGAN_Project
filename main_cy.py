@@ -198,8 +198,8 @@ class cy_model():
                 r_label = torch.ones((self.batch_size)).cuda()
                 f_label = torch.zeros((self.batch_size)).cuda()
                 #compute the loss
-                r_loss = self.criterion(real_dis.flatten(), r_label)
-                f_loss = self.criterion(fake_dis.flatten(), f_label)
+                r_loss = self.criterion(real_dis, r_label)
+                f_loss = self.criterion(fake_dis, f_label)
                 d_loss = (r_loss + f_loss) / 2
                 #backward and update the discriminator
                 d_loss.backward()
@@ -222,7 +222,7 @@ class cy_model():
                     one_gen[indices_gen]=0
                     gen_dis=gen_dis*one_gen
                 '''
-                g_loss = self.criterion(gen_dis.flatten(), r_label)
+                g_loss = self.criterion(gen_dis, r_label)
                 #backward and update
                 g_loss.backward()
                 self.gen_opt_DC.step()
