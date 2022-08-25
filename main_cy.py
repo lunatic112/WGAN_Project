@@ -168,6 +168,7 @@ class cy_model():
                 data=self.get_batch().__next__()
                 #block short batches
                 if len(data)!=self.batch_size:
+                    print((data != data).mean())
                     continue
 
                 #prepare real data and fake data
