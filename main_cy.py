@@ -166,7 +166,7 @@ class cy_model():
                 #train the discriminator for one time
                 #read in a new batch
                 data=self.get_batch().__next__()
-                print((data != data))
+                print((data != data).all())
                 #block short batches
                 if len(data)!=self.batch_size:
                     continue
