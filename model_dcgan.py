@@ -14,13 +14,13 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-class Generator(nn.Module):
+class generator(nn.Module):
     """
     input (N, in_dim)
     output (N, 3, 64, 64)
     """
     def __init__(self, inchanel, dim=64):
-        super(Generator, self).__init__()
+        super(generator, self).__init__()
         def dconv_bn_relu(inchanel, out_dim):
             return nn.Sequential(
                 nn.ConvTranspose2d(inchanel, out_dim, 5, 2,
@@ -44,13 +44,13 @@ class Generator(nn.Module):
         y = self.l2_5(y)
         return y
 
-class Discriminator(nn.Module):
+class discriminator(nn.Module):
     """
     input (N, 3, 64, 64)
     output (N, )
     """
     def __init__(self, dim=64):
-        super(Discriminator, self).__init__()
+        super(discriminator, self).__init__()
         def conv_bn_lrelu(in_dim, out_dim):
             return nn.Sequential(
                 nn.Conv2d(in_dim, out_dim, 5, 2, 2),
