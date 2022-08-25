@@ -170,61 +170,43 @@ class bw_model():
                 if len(data)!=self.batch_size:
                     continue
 
-                #prepare real data and fake data
-                real_raw=data.cuda()
-                real = Variable(real_raw).cuda()
-                noise=Variable(torch.randn((self.batch_size, self.init_channel, 1, 1))).cuda()
-                fake=self.G(noise).cuda()
+                """ Train D """
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                r_imgs = Variable(data).cuda()
+                f_imgs = self.G(z)
 
-                #neutralize the gradients
-                self.D.zero_grad()
-                #discriminate
-                real_dis=self.D(real.detach())
-                fake_dis=self.D(fake.detach())
-                '''
-                #forced learning trick
-                #sort the discrimination and choose the worst half
-                indices_real=real_dis.sort(dim=0).indices[:int(self.batch_size/2)]
-                one_real=torch.ones(self.batch_size,1,1,1).cuda()
-                one_real[indices_real]=0
-                indices_fake=real_dis.sort(dim=0).indices[int(self.batch_size/2):]
-                one_fake=torch.ones(self.batch_size,1,1,1).cuda()
-                one_fake[indices_fake]=0
-                #select the desired entries from real and fake loss
-                real_dis=real_dis*one_real
-                fake_dis=fake_dis*one_fake
-                '''
                 # label        
                 r_label = torch.ones((self.batch_size)).cuda()
                 f_label = torch.zeros((self.batch_size)).cuda()
-                #compute the loss
-                r_loss = self.criterion(real_dis, r_label)
-                f_loss = self.criterion(fake_dis, f_label)
-                d_loss = (r_loss + f_loss) / 2
-                #backward and update the discriminator
-                d_loss.backward()
+
+                # dis
+                r_logit = self.D(r_imgs.detach())
+                f_logit = self.D(f_imgs.detach())
+                
+                # compute loss
+                r_loss = self.criterion(r_logit, r_label)
+                f_loss = self.criterion(f_logit, f_label)
+                loss_D = (r_loss + f_loss) / 2
+
+                # update model
+                self.D.zero_grad()
+                loss_D.backward()
                 self.dis_opt_DC.step()
-                                    
-                #train the generator for one time
-                #freeze the grad of discirminator
-                for p in self.D.parameters():
-                    p.requires_grad=False
-                #neutralize the gradients
+
+                """ train G """
+                # leaf
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                f_imgs = self.G(z)
+
+                # dis
+                f_logit = self.D(f_imgs)
+                
+                # compute loss
+                loss_G = self.criterion(f_logit, r_label)
+
+                # update model
                 self.G.zero_grad()
-                #generate some fake imgs for generator training
-                noise=Variable(torch.randn(self.batch_size, self.init_channel)).cuda()
-                fake=self.G(noise).cuda()
-                gen_dis=-self.D(fake)
-                '''
-                    #forced learning trick
-                    indices_gen=gen_dis.sort(dim=0).indices[32:]
-                    one_gen=torch.ones(batch_size,1,1,1).cuda()
-                    one_gen[indices_gen]=0
-                    gen_dis=gen_dis*one_gen
-                '''
-                g_loss = self.criterion(gen_dis, r_label)
-                #backward and update
-                g_loss.backward()
+                loss_G.backward()
                 self.gen_opt_DC.step()
 
                 #progress check every 1000 iters
