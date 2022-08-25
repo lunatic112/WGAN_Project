@@ -3,87 +3,68 @@ import torch.nn as nn
 
 #base model using DCGAN
 
-class generator(nn.Module):
-    def __init__(self, inchanel):
-        super(generator, self).__init__()
-        # 1d input to 2d
-        self.l1=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=inchanel, out_channels=1024, kernel_size=4, stride=1, padding=0),
-            nn.BatchNorm2d(num_features=1024),
-            nn.ReLU(True)
-        )
-        # 1024*4*4 -> 512*8*8
-        self.l2=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=1024, out_channels=512, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=512),
-            nn.ReLU(True)
-        )
-        #512*8*8 -> 256*16*16
-        self.l3=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=512, out_channels=256, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=256),
-            nn.ReLU(True)
-        )
-        #256*16*16 -> 128*32*32
-        self.l4=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=256, out_channels=128, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(num_features=128),
-            nn.ReLU(True)
-        )
-        #128*32*32 -> 3*64*64 (image output)
-        self.fin=nn.Sequential(
-            nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=4, stride=2, padding=1),
-            nn.Tanh()
-        )
-        self.inchanel=inchanel
-    
-    def forward(self,x: torch.Tensor):
-        x=x.view(-1, self.inchanel, 1, 1)
-        x=self.l1(x)
-        x=self.l2(x)
-        x=self.l3(x)
-        x=self.l4(x)
-        x=self.fin(x)
+import torch.nn as nn
+import torch.nn.functional as F
 
-        return x
+def weights_init(m):
+    classname = m.__class__.__name__
+    if classname.find('Conv') != -1:
+        m.weight.data.normal_(0.0, 0.02)
+    elif classname.find('BatchNorm') != -1:
+        m.weight.data.normal_(1.0, 0.02)
+        m.bias.data.fill_(0)
 
-class discriminator(nn.Module):
-    def __init__(self):
-        super(discriminator, self).__init__()
-        #3*64*64 -> 128*32*32
-        self.l1=nn.Sequential(
-            nn.Conv2d(3, 128, 5, 2, 2),
-            nn.LeakyReLU(0.2, inplace=True)
-        )
-        #128*32*32 -> 256*16*16
-        self.l2=nn.Sequential(
-            nn.Conv2d(128, 256, 5, 2, 2),
-            nn.BatchNorm2d(256),
-            nn.LeakyReLU(0.2, inplace=True)
-        )
-        #256*16*16 -> 512*8*8
-        self.l3=nn.Sequential(
-            nn.Conv2d(256, 512, 5, 2, 2),
-            nn.BatchNorm2d(512),
-            nn.LeakyReLU(0.2, inplace=True)
-        )
-        #512*8*8 -> 1024*4*4
-        self.l4=nn.Sequential(
-            nn.Conv2d(512, 1024, 5, 2, 2),
-            nn.BatchNorm2d(1024),
-            nn.LeakyReLU(0.2, inplace=True)
-        )
-        self.fin=nn.Sequential(
-            nn.Conv2d(1024, 1, 4),
-            nn.Sigmoid()
-        )
-    
-    def forward(self,x):
-        x=self.l1(x)
-        x=self.l2(x)
-        x=self.l3(x)
-        x=self.l4(x)
-        x=self.fin(x)
-        y = x
+class Generator(nn.Module):
+    """
+    input (N, in_dim)
+    output (N, 3, 64, 64)
+    """
+    def __init__(self, inchanel, dim=64):
+        super(Generator, self).__init__()
+        def dconv_bn_relu(inchanel, out_dim):
+            return nn.Sequential(
+                nn.ConvTranspose2d(inchanel, out_dim, 5, 2,
+                                   padding=2, output_padding=1, bias=False),
+                nn.BatchNorm2d(out_dim),
+                nn.ReLU())
+        self.l1 = nn.Sequential(
+            nn.Linear(inchanel, dim * 8 * 4 * 4, bias=False),
+            nn.BatchNorm1d(dim * 8 * 4 * 4),
+            nn.ReLU())
+        self.l2_5 = nn.Sequential(
+            dconv_bn_relu(dim * 8, dim * 4),
+            dconv_bn_relu(dim * 4, dim * 2),
+            dconv_bn_relu(dim * 2, dim),
+            nn.ConvTranspose2d(dim, 3, 5, 2, padding=2, output_padding=1),
+            nn.Tanh())
+        self.apply(weights_init)
+    def forward(self, x):
+        y = self.l1(x)
+        y = y.view(y.size(0), -1, 4, 4)
+        y = self.l2_5(y)
+        return y
+
+class Discriminator(nn.Module):
+    """
+    input (N, 3, 64, 64)
+    output (N, )
+    """
+    def __init__(self, dim=64):
+        super(Discriminator, self).__init__()
+        def conv_bn_lrelu(in_dim, out_dim):
+            return nn.Sequential(
+                nn.Conv2d(in_dim, out_dim, 5, 2, 2),
+                nn.BatchNorm2d(out_dim),
+                nn.LeakyReLU(0.2))
+        self.ls = nn.Sequential(
+            nn.Conv2d(3, dim, 5, 2, 2), nn.LeakyReLU(0.2),
+            conv_bn_lrelu(dim, dim * 2),
+            conv_bn_lrelu(dim * 2, dim * 4),
+            conv_bn_lrelu(dim * 4, dim * 8),
+            nn.Conv2d(dim * 8, 1, 4),
+            nn.Sigmoid())
+        self.apply(weights_init)        
+    def forward(self, x):
+        y = self.ls(x)
         y = y.view(-1)
         return y
