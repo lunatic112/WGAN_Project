@@ -220,4 +220,4 @@ class bedroom_model():
         torch.save(self.G.state_dict(), f'./savepoint/after_bd_G.pth')
         torch.save(self.D.state_dict(), f'./savepoint/after_bd_D.pth')
 
-        return [f'./savepoint/after_cy_G.pth', f'./savepoint/after_bd_D.pth']
+        return [f'./savepoint/after_bd_G.pth', f'./savepoint/after_bd_D.pth']
