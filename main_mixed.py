@@ -15,7 +15,7 @@ from crypko_data import crypkoFace as cy
 from blackwhite_data import bw_data as bw
 from human_face_data import humanFace as hf
 from bedroom_data import bedroom as bd
-mixed=ConcatDataset([cat, cy, bw, hf, bd])
+mixed=ConcatDataset([cat(), cy(), bw(), hf(), bd()])
 
 class mixed():
     def __init__(self, dataset=mixed, model=WGANGP) -> None:
@@ -32,7 +32,7 @@ class mixed():
         self.criterion = nn.BCELoss()
 
         #dataloader
-        self.dataset=dataset()
+        self.dataset=dataset
         self.dataloader=DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
         #models
         self.model=model
