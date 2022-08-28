@@ -64,6 +64,7 @@ if __name__ == '__main__':
     for epoch in range(max_epochs):
         for batch_idx, data in enumerate(train_loader):
             print(data.shape)
+            print(X.shape)
             X.data.copy_(data)
 
             # Update discriminator
