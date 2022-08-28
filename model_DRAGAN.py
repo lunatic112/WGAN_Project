@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # Train
     for epoch in range(max_epochs):
         for batch_idx, data in enumerate(train_loader):
-            data=torch.flatten(data, start_dim=-2, end_dim=-1)
+            print(data.shape())
             X.data.copy_(data)
 
             # Update discriminator
