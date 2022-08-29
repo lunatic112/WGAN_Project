@@ -311,7 +311,7 @@ class cat_model():
                 if (i_g+1) % 1000 == 0:
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
-                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/hf_iters_{i_g}.jpg', nrow=10)
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cat_iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint afterwards
         torch.save(self.G.state_dict(), f'./savepoint/after_cat_G.pth')
