@@ -234,7 +234,7 @@ class bw_model():
             l2dist = nn.PairwiseDistance(2)
             LeakyReLU = nn.LeakyReLU(0)
 
-            for i_g in tqdm(self.gen_train_times):
+            for i_g in tqdm(range(self.gen_train_times)):
                 data = self.get_batch().__next__()
                 
                 # Update D network
