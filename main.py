@@ -9,7 +9,7 @@ import model_gp as WGANGP
 import model_dcgan as DCGAN
 import model_lsgan as LSGAN
 
-#cy->bw->human->cat->bed-> WGANGP
+#bed->cat->human->bw->cy
 model=LSGAN
 Net1=bd(model=model)
 Net2=cat(model=model)
@@ -18,8 +18,8 @@ Net4=bw(model=model)
 Net5=cy(model=model)
 Net5.train(Net4.train(Net3.train(Net2.train(Net1.train()))))
 '''
-#bed->cat->human->bw->cy
-model=DCGAN
+#cy->bw->human->cat->bed->
+model=LSGAN
 Net1=cy(model=model)
 Net2=bw(model=model)
 Net3=hf(model=model)
