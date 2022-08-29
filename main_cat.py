@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable, grad
 import model_gp as WGANGP
 import model_dcgan as DCGAN
+import model_lsgan as LSGAN
 from cat_data import catFace as cat
 from tqdm import tqdm
 import torchvision
@@ -57,6 +58,18 @@ class cat_model():
 
             grad_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * self.lambda_term
             return grad_penalty
+    
+    # Graident penalty proposed originally in Qi's paper.
+    def get_direct_gradient_penalty(self, x, gamma=10):
+        x=x.cuda()
+        x = torch.autograd.Variable(x, requires_grad=True)
+        output = self.D(x)
+        gradOutput = torch.ones(output.size()).cuda()
+        
+        gradient = torch.autograd.grad(outputs=output, inputs=x, grad_outputs=gradOutput, create_graph=True, retain_graph=True, only_inputs=True)[0]
+        gradientPenalty = (gradient.norm(2, dim=1)).mean() * gamma
+        
+        return gradientPenalty
     
     #function for getting batches
     def get_batch(self):
@@ -215,6 +228,90 @@ class cat_model():
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cat_iters_{i_g}.jpg', nrow=10)
+        elif self.model==LSGAN:
+            # -------- Init tensor --------
+            l1dist = nn.PairwiseDistance(1)
+            l2dist = nn.PairwiseDistance(2)
+            LeakyReLU = nn.LeakyReLU(0)
+
+            for i_g in tqdm(self.gen_train_times):
+                data = self.get_batch().__next__()
+                
+                # Update D network
+                for p in self.D.parameters():
+                    p.requires_grad = True 
+
+                self.D.zero_grad()
+
+                # Get batch data and initialize parameters.
+                x = data
+                dataSize = x.size(0)
+                z = torch.FloatTensor(dataSize, self.init_channel, 1, 1).normal_(0, 1)
+
+                x = x.cuda()
+                z = z.cuda()
+
+                x = torch.autograd.Variable(x, requires_grad=True)
+                z = torch.autograd.Variable(z)
+
+                fake = torch.autograd.Variable(self.G(z).data)
+
+                # Loss R for real
+                outputR = self.D(x)
+                
+                # Loss F for fake.
+                outputF = self.D(fake)
+
+                # L1 distance between real and fake.
+                pdist = l1dist(x.view(dataSize, -1), fake.view(dataSize, -1)).mul(10)
+
+                # Loss for D.
+                errD = LeakyReLU(outputR - outputF + pdist).mean()
+                errD.backward()
+                
+                # Penalize direct gradient of x.
+                gp = self.get_direct_gradient_penalty(x.data)
+                gp.backward()
+
+                # Gradient of D.
+                gradD = x.grad
+
+                # Automatically accumulate gradients.
+                self.dis_opt_DC.step()
+
+                # Update G network, freeze D.
+                for p in self.D.parameters():
+                    p.requires_grad = False 
+
+                self.G.zero_grad()
+
+                # Create noise with normal distribution and project into data space.
+                z = torch.FloatTensor(dataSize, self.init_channel, 1, 1).normal_(0, 1)
+            
+                z = z.cuda()
+
+                z = torch.autograd.Variable(z, requires_grad=True)
+                fake = self.G(z)
+
+                # Loss F for fake.
+                outputF = self.D(fake)
+
+                # Error of G.
+                errG = outputF.mean()
+                errG.backward()
+
+                # Gradient of G.
+                gradG = z.grad
+
+                # Automatically accumulate gradients.
+                self.gen_opt_DC.step()
+
+                #progress check every 1000 iters
+                #generate 100 pics from same noise
+                if (i_g+1) % 1000 == 0:
+                    self.G.eval()
+                    fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/hf_iters_{i_g}.jpg', nrow=10)
 
         #save checkpoint afterwards
         torch.save(self.G.state_dict(), f'./savepoint/after_cat_G.pth')
