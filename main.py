@@ -7,9 +7,10 @@ from main_human_face import human_face_model as hf
 #baseline model
 import model_gp as WGANGP
 import model_dcgan as DCGAN
+import model_lsgan as LSGAN
 
 #cy->bw->human->cat->bed-> WGANGP
-model=WGANGP
+model=LSGAN
 Net1=cy(model=model)
 Net2=bw(model=model)
 Net3=hf(model=model)
