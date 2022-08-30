@@ -15,7 +15,7 @@ from crypko_data import crypkoFace as cy
 from blackwhite_data import bw_data as bw
 from human_face_data import humanFace as hf
 from bedroom_data import bedroom as bd
-mixed=ConcatDataset([cat(), cy(), bw(), hf(), bd()])
+mixed=ConcatDataset([cat()[:6000], cy()[:6000], bw()[:6000], hf()[:6000], bd()[:6000]])
 
 class mixed():
     def __init__(self, dataset=mixed, model=WGANGP) -> None:
