@@ -36,6 +36,8 @@ class human_face_model():
         self.dis_opt=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(self.b1,self.b2))
         self.gen_opt_DC=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
+        self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=2e-4, betas=(0.5,0.999))
+        self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=2e-4, betas=(0.5,0.999))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 
@@ -278,7 +280,7 @@ class human_face_model():
                 gradD = x.grad
 
                 # Automatically accumulate gradients.
-                self.dis_opt_DC.step()
+                self.dis_opt_LS.step()
 
                 # Update G network, freeze D.
                 for p in self.D.parameters():
@@ -305,7 +307,7 @@ class human_face_model():
                 gradG = z.grad
 
                 # Automatically accumulate gradients.
-                self.gen_opt_DC.step()
+                self.gen_opt_LS.step()
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
