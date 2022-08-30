@@ -238,5 +238,5 @@ class mixed():
 
         return [f'./savepoint/after_hf_G.pth', f'./savepoint/after_hf_D.pth']
 
-Net=mixed(model=DCGAN)
+Net=mixed(model=WGANGP)
 Net.train()
