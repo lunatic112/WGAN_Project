@@ -10,17 +10,13 @@ import torch.nn as nn
 
 #mixed dataset
 from torch.utils.data import ConcatDataset
-from cat_data import catFace as cat
-from crypko_data import crypkoFace as cy
-from blackwhite_data import bw_data as bw
-from human_face_data import humanFace as hf
-from bedroom_data import bedroom as bd
-dt1=cat()
-dt2=cy()
-dt3=bw()
-dt4=hf()
-dt5=bd()
-mixed=ConcatDataset([dt1[:6000], dt2[:6000], dt3[:6000], dt4[:6000], dt5[:6000]])
+from cat_data import catFace_short as cat
+from crypko_data import crypkoFace_short as cy
+from blackwhite_data import bw_data_short as bw
+from human_face_data import humanFace_short as hf
+from bedroom_data import bedroom_short as bd
+
+mixed=ConcatDataset([cat(), cy(), bw(), hf(), bd()])
 
 class mixed():
     def __init__(self, dataset=mixed, model=WGANGP) -> None:
