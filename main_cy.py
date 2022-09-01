@@ -254,7 +254,7 @@ class cy_model():
                 # compute loss
                 r_loss = 0.5 * torch.mean((r_logit-r_label)**2)
                 r_loss.backward()
-                f_loss = 0.5 * torch.mean((f_logit-f_loss)**2)
+                f_loss = 0.5 * torch.mean((f_logit-f_label)**2)
                 f_loss.backward()
 
                 # update model
@@ -270,7 +270,7 @@ class cy_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = 0.5 * torch.mean((f_logit-r_loss)**2)
+                loss_G = 0.5 * torch.mean((f_logit-r_label)**2)
                 loss_G.backward
 
                 # update model
