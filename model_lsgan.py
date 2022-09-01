@@ -53,27 +53,30 @@ class discriminator(nn.Module):
         #3*64*64 -> 128*32*32
         self.l1=nn.Sequential(
             nn.Conv2d(3, 128, 5, 2, 2),
-            nn.InstanceNorm2d(128, affine=True),
             nn.LeakyReLU(0.2, inplace=True)
         )
         #128*32*32 -> 256*16*16
         self.l2=nn.Sequential(
             nn.Conv2d(128, 256, 5, 2, 2),
-            nn.InstanceNorm2d(256, affine=True),
+            nn.BatchNorm2d(256),
             nn.LeakyReLU(0.2, inplace=True)
         )
         #256*16*16 -> 512*8*8
         self.l3=nn.Sequential(
             nn.Conv2d(256, 512, 5, 2, 2),
-            nn.InstanceNorm2d(512, affine=True),
+            nn.BatchNorm2d(512),
             nn.LeakyReLU(0.2, inplace=True)
         )
         #512*8*8 -> 1024*4*4
         self.l4=nn.Sequential(
             nn.Conv2d(512, 1024, 5, 2, 2),
+            nn.BatchNorm2d(1024),
             nn.LeakyReLU(0.2, inplace=True)
         )
-        self.fin=nn.Conv2d(1024, 1, 4)
+        self.fin=nn.Sequential(
+            nn.Conv2d(1024, 1, 4),
+            nn.Sigmoid()
+        )
     
     def forward(self,x):
         x=self.l1(x)
@@ -81,5 +84,6 @@ class discriminator(nn.Module):
         x=self.l3(x)
         x=self.l4(x)
         x=self.fin(x)
-
-        return x
+        y = x
+        y = y.view(-1)
+        return y

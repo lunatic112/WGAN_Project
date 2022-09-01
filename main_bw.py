@@ -62,18 +62,6 @@ class bw_model():
             grad_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * self.lambda_term
             return grad_penalty
     
-    # Graident penalty proposed originally in Qi's paper.
-    def get_direct_gradient_penalty(self, x, gamma=10):
-        x=x.cuda()
-        x = torch.autograd.Variable(x, requires_grad=True)
-        output = self.D(x)
-        gradOutput = torch.ones(output.size()).cuda()
-        
-        gradient = torch.autograd.grad(outputs=output, inputs=x, grad_outputs=gradOutput, create_graph=True, retain_graph=True, only_inputs=True)[0]
-        gradientPenalty = (gradient.norm(2, dim=1)).mean() * gamma
-        
-        return gradientPenalty
-    
     #function for getting batches
     def get_batch(self):
         while True:
@@ -231,79 +219,61 @@ class bw_model():
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bw_iters_{i_g}.jpg', nrow=10)
         elif self.model==LSGAN:
-            # -------- Init tensor --------
-            l1dist = nn.PairwiseDistance(1)
-            l2dist = nn.PairwiseDistance(2)
-            LeakyReLU = nn.LeakyReLU(0)
-
             for i_g in tqdm(range(self.gen_train_times)):
-                data = self.get_batch().__next__()
+                    
+                #turning models into training mode
+                self.G.train()
+                self.D.train()
                 
-                # Update D network
+                #enable the gradcomputation of discriminator
                 for p in self.D.parameters():
-                    p.requires_grad = True 
+                    p.requires_grad=True
+                #train the discriminator for one time
+                #read in a new batch
+                data=self.get_batch().__next__()
+                #block short batches
+                if len(data)!=self.batch_size:
+                    continue
 
+
+                """ Train D """
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                r_imgs = Variable(data).cuda()
+                f_imgs = self.G(z)
+
+                # label        
+                r_label = torch.ones((self.batch_size)).cuda()
+                f_label = torch.zeros((self.batch_size)).cuda()
+
+                # dis
+                r_logit = self.D(r_imgs.detach())
+                f_logit = self.D(f_imgs.detach())
+                
+                # compute loss
+                r_loss = nn.MSELoss(r_logit,r_label)
+                f_loss = nn.MSELoss(f_logit, f_label)
+                loss_D = (r_loss + f_loss) / 2
+
+                # update model
                 self.D.zero_grad()
+                loss_D.backward()
+                self.dis_opt_DC.step()
 
-                # Get batch data and initialize parameters.
-                x = data
-                dataSize = x.size(0)
-                z = torch.FloatTensor(dataSize, self.init_channel, 1, 1).normal_(0, 1)
+                """ train G """
+                # leaf
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                f_imgs = self.G(z)
 
-                x = x.cuda()
-                z = z.cuda()
-
-                x = torch.autograd.Variable(x, requires_grad=True)
-                z = torch.autograd.Variable(z)
-
-                fake = torch.autograd.Variable(self.G(z).data)
-
-                # Loss R for real
-                outputR = self.D(x)
+                # dis
+                f_logit = self.D(f_imgs)
                 
-                # Loss F for fake.
-                outputF = self.D(fake)
+                # compute loss
+                loss_G = nn.MSELoss(f_logit, r_label)
 
-                # L1 distance between real and fake.
-                pdist = l1dist(x.view(dataSize, -1), fake.view(dataSize, -1)).mul(10)
-
-                # Loss for D.
-                errD = LeakyReLU(outputR - outputF + pdist).mean()
-                errD.backward()
-                
-                # Penalize direct gradient of x.
-                gp = self.get_direct_gradient_penalty(x.data)
-                gp.backward()
-
-                # Automatically accumulate gradients.
-                self.dis_opt_LS.step()
-
-                # Update G network, freeze D.
-                for p in self.D.parameters():
-                    p.requires_grad = False 
-
+                # update model
                 self.G.zero_grad()
-
-                # Create noise with normal distribution and project into data space.
-                z = torch.FloatTensor(dataSize, self.init_channel, 1, 1).normal_(0, 1)
-            
-                z = z.cuda()
-
-                z = torch.autograd.Variable(z, requires_grad=True)
-                fake = self.G(z)
-
-                # Loss F for fake.
-                outputF = self.D(fake)
-
-                # Error of G.
-                errG = outputF.mean()
-                errG.backward()
-
-                # Gradient of G.
-                gradG = z.grad
-
-                # Automatically accumulate gradients.
-                self.gen_opt_LS.step()
+                loss_G.backward()
+                self.gen_opt_DC.step()
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
