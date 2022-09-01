@@ -23,7 +23,7 @@ class bw_model():
         self.b2 = 0.9
         self.lambda_term=10
         self.criterion = nn.BCELoss()
-
+        self.criterion = nn.MSELoss()
         #dataloader
         self.dataset=dataset()
         self.dataloader=DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
@@ -250,8 +250,8 @@ class bw_model():
                 f_logit = self.D(f_imgs.detach())
                 
                 # compute loss
-                r_loss = nn.MSELoss(r_logit,r_label)
-                f_loss = nn.MSELoss(f_logit, f_label)
+                r_loss = self.criterion_LS(r_logit,r_label)
+                f_loss = self.criterion_LS(f_logit, f_label)
                 loss_D = (r_loss + f_loss) / 2
 
                 # update model
@@ -268,7 +268,7 @@ class bw_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = nn.MSELoss(f_logit, r_label)
+                loss_G = self.criterion_LS(f_logit, r_label)/2
 
                 # update model
                 self.G.zero_grad()
