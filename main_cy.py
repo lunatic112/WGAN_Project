@@ -258,7 +258,7 @@ class cy_model():
                 # update model
                 self.D.zero_grad()
                 loss_D.backward()
-                self.dis_opt_DC.step()
+                self.dis_opt_LS.step()
 
                 """ train G """
                 # leaf
@@ -274,7 +274,7 @@ class cy_model():
                 # update model
                 self.G.zero_grad()
                 loss_G.backward()
-                self.gen_opt_DC.step()
+                self.gen_opt_LS.step()
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
