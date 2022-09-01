@@ -271,7 +271,7 @@ class cy_model():
                 
                 # compute loss
                 loss_G = 0.5 * torch.mean((f_logit-r_label)**2)
-                loss_G.backward
+                loss_G.backward()
 
                 # update model
                 self.gen_opt_LS.step()
