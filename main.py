@@ -19,7 +19,7 @@ Net5=cy(model=model)
 Net5.train(Net4.train(Net3.train(Net2.train(Net1.train()))))
 '''
 #cy->bw->human->cat->bed
-model=DCGAN
+model=LSGAN
 Net1=cy(model=model)
 Net2=bw(model=model)
 Net3=hf(model=model)
