@@ -75,7 +75,6 @@ class discriminator(nn.Module):
         )
         self.fin=nn.Sequential(
             nn.Conv2d(1024, 1, 4),
-            nn.Sigmoid()
         )
     
     def forward(self,x):

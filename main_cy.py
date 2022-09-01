@@ -238,6 +238,7 @@ class cy_model():
 
 
                 """ Train D """
+                self.D.zero_grad()
                 z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 r_imgs = Variable(data).cuda()
                 f_imgs = self.G(z)
@@ -251,16 +252,16 @@ class cy_model():
                 f_logit = self.D(f_imgs.detach())
                 
                 # compute loss
-                r_loss = self.criterion(r_logit, r_label)
-                f_loss = self.criterion(f_logit, f_label)
-                loss_D = (r_loss + f_loss) / 2
+                r_loss = 0.5 * torch.mean((r_logit-r_label)**2)
+                r_loss.backward()
+                f_loss = 0.5 * torch.mean((f_logit-f_loss)**2)
+                f_loss.backward()
 
                 # update model
-                self.D.zero_grad()
-                loss_D.backward()
                 self.dis_opt_LS.step()
 
                 """ train G """
+                self.G.zero_grad()
                 # leaf
                 z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 f_imgs = self.G(z)
@@ -269,11 +270,10 @@ class cy_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = self.criterion(f_logit, r_label)
+                loss_G = 0.5 * torch.mean((f_logit-r_loss)**2)
+                loss_G.backward
 
                 # update model
-                self.G.zero_grad()
-                loss_G.backward()
                 self.gen_opt_LS.step()
 
                 #progress check every 1000 iters
