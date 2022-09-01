@@ -23,7 +23,7 @@ class bw_model():
         self.b2 = 0.9
         self.lambda_term=10
         self.criterion = nn.BCELoss()
-        self.criterion = nn.MSELoss()
+        self.criterion_LS = nn.MSELoss()
         #dataloader
         self.dataset=dataset()
         self.dataloader=DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=2)
