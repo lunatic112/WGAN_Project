@@ -268,7 +268,7 @@ class cy_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = nn.MSELoss(f_logit, r_label)
+                loss_G = nn.MSELoss(f_logit, r_label)/2
 
                 # update model
                 self.G.zero_grad()
