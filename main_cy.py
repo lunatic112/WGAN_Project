@@ -251,8 +251,8 @@ class cy_model():
                 f_logit = self.D(f_imgs.detach())
                 
                 # compute loss
-                r_loss = self.criterion_LS(r_logit, r_label)
-                f_loss = self.criterion_LS(f_logit, f_label)
+                r_loss = ((r_logit-r_label)**2).mean()
+                f_loss = ((f_logit-f_label)**2).mean()
                 loss_D = (r_loss + f_loss) / 2
 
                 # update model
@@ -269,7 +269,7 @@ class cy_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = self.criterion_LS(f_logit, r_label)/2
+                loss_G = ((f_logit-r_label)**2).mean()/2
 
                 # update model
                 self.G.zero_grad()
