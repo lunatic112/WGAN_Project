@@ -36,7 +36,7 @@ class bw_model():
         self.dis_opt=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(self.b1,self.b2))
         self.gen_opt_DC=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
-        self.gen_opt_LS=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
+        self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
