@@ -269,7 +269,7 @@ class human_face_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = nn.MSELoss(f_logit, r_label)/2
+                loss_G = nn.MSELoss(f_logit, r_label)
 
                 # update model
                 self.G.zero_grad()
