@@ -74,7 +74,7 @@ class discriminator(nn.Module):
             nn.LeakyReLU(0.2, inplace=True)
         )
         self.fin=nn.Sequential(
-            nn.Conv2d(1024, 1, 4),
+            nn.Conv2d(1024, 1, 4)
         )
     
     def forward(self,x):
