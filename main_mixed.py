@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable, grad
 import model_gp as WGANGP
 import model_dcgan as DCGAN
+import model_lsgan as LSGAN
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
@@ -232,6 +233,73 @@ class mixed():
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
 
                 #save checkpoint every 3000 iters
+                if (i_g+1) % 3000 == 0:
+                    torch.save(self.G.state_dict(), f'./savepoint/mixed_G_iters_{i_g}.pth')
+                    torch.save(self.D.state_dict(), f'./savepoint/mixed_D_iters_{i_g}.pth')
+        elif self.model==LSGAN:
+            for i_g in tqdm(range(self.gen_train_times)):
+                    
+                #turning models into training mode
+                self.G.train()
+                self.D.train()
+                
+                #enable the gradcomputation of discriminator
+                for p in self.D.parameters():
+                    p.requires_grad=True
+                #train the discriminator for one time
+                #read in a new batch
+                data=self.get_batch().__next__()
+                #block short batches
+                if len(data)!=self.batch_size:
+                    continue
+
+
+                """ Train D """
+                self.D.zero_grad()
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                r_imgs = Variable(data).cuda()
+                f_imgs = self.G(z)
+
+                # label        
+                r_label = torch.ones((self.batch_size)).cuda()
+                f_label = torch.zeros((self.batch_size)).cuda()
+
+                # dis
+                r_logit = self.D(r_imgs.detach())
+                f_logit = self.D(f_imgs.detach())
+                
+                # compute loss
+                r_loss = 0.5 * torch.mean((r_logit-r_label)**2)
+                r_loss.backward()
+                f_loss = 0.5 * torch.mean((f_logit-f_label)**2)
+                f_loss.backward()
+
+                # update model
+                self.dis_opt_LS.step()
+
+                """ train G """
+                self.G.zero_grad()
+                # leaf
+                z = Variable(torch.randn(self.batch_size, 200)).cuda()
+                f_imgs = self.G(z)
+
+                # dis
+                f_logit = self.D(f_imgs)
+                
+                # compute loss
+                loss_G = 0.5 * torch.mean((f_logit-r_label)**2)
+                loss_G.backward()
+
+                # update model
+                self.gen_opt_LS.step()
+
+                #progress check every 1000 iters
+                #generate 100 pics from same noise
+                if (i_g+1) % 1000 == 0:
+                    self.G.eval()
+                    fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
+                
                 if (i_g+1) % 3000 == 0:
                     torch.save(self.G.state_dict(), f'./savepoint/mixed_G_iters_{i_g}.pth')
                     torch.save(self.D.state_dict(), f'./savepoint/mixed_D_iters_{i_g}.pth')
