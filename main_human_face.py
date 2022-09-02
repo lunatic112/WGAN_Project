@@ -37,8 +37,8 @@ class human_face_model():
         self.dis_opt=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(self.b1,self.b2))
         self.gen_opt_DC=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
-        self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=self.lr, betas=(0.5,0.999))
-        self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
+        self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=2e-4, betas=(0.5,0.999))
+        self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=2e-4, betas=(0.5,0.999))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 
@@ -239,6 +239,7 @@ class human_face_model():
 
 
                 """ Train D """
+                self.D.zero_grad()
                 z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 r_imgs = Variable(data).cuda()
                 f_imgs = self.G(z)
@@ -252,16 +253,16 @@ class human_face_model():
                 f_logit = self.D(f_imgs.detach())
                 
                 # compute loss
-                r_loss = self.criterion_LS(r_logit,r_label)
-                f_loss = self.criterion_LS(f_logit, f_label)
-                loss_D = (r_loss + f_loss) / 2
+                r_loss = 0.5 * torch.mean((r_logit-r_label)**2)
+                r_loss.backward()
+                f_loss = 0.5 * torch.mean((f_logit-f_label)**2)
+                f_loss.backward()
 
                 # update model
-                self.D.zero_grad()
-                loss_D.backward()
-                self.dis_opt_DC.step()
+                self.dis_opt_LS.step()
 
                 """ train G """
+                self.G.zero_grad()
                 # leaf
                 z = Variable(torch.randn(self.batch_size, 200)).cuda()
                 f_imgs = self.G(z)
@@ -270,12 +271,11 @@ class human_face_model():
                 f_logit = self.D(f_imgs)
                 
                 # compute loss
-                loss_G = self.criterion_LS(f_logit, r_label)/2
+                loss_G = 0.5 * torch.mean((f_logit-r_label)**2)
+                loss_G.backward()
 
                 # update model
-                self.G.zero_grad()
-                loss_G.backward()
-                self.gen_opt_DC.step()
+                self.gen_opt_LS.step()
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
