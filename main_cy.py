@@ -16,7 +16,7 @@ class cy_model():
         self.init_channel = 200
         self.batch_size = 64
         self.lr = 0.0001
-        self.gen_train_times = 3000
+        self.gen_train_times = 10000
         self.diss_train_times = 5
         self.params_range = 0.01
         self.b1 = 0
