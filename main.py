@@ -8,9 +8,9 @@ from main_human_face import human_face_model as hf
 import model_gp as WGANGP
 import model_dcgan as DCGAN
 import model_lsgan as LSGAN
-'''-
+
 #bed->cat->human->bw->cy
-model=LSGAN
+model=WGANGP
 Net1=bd(model=model)
 Net2=cat(model=model)
 Net3=hf(model=model)
@@ -26,4 +26,4 @@ Net3=hf(model=model)
 Net4=cat(model=model)
 Net5=bd(model=model)
 Net5.train(Net1.train())
-
+'''
