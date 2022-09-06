@@ -164,10 +164,9 @@ class mixed():
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/hf_iters_{i_g}.jpg', nrow=10)
 
-                #save checkpoint every 3000 iters
-                if (i_g+1) % 3000 == 0:
-                    torch.save(self.G.state_dict(), f'./savepoint/mixed_G_iters_{i_g}.pth')
-                    torch.save(self.D.state_dict(), f'./savepoint/mixed_D_iters_{i_g}.pth')
+                #save checkpoint
+                torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
+                torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
         elif self.model==DCGAN:
             for i_g in tqdm(range(self.gen_train_times)):
                     
@@ -232,10 +231,9 @@ class mixed():
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
 
-                #save checkpoint every 3000 iters
-                if (i_g+1) % 3000 == 0:
-                    torch.save(self.G.state_dict(), f'./savepoint/mixed_G_iters_{i_g}.pth')
-                    torch.save(self.D.state_dict(), f'./savepoint/mixed_D_iters_{i_g}.pth')
+                #save checkpoint
+                torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
+                torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
         elif self.model==LSGAN:
             for i_g in tqdm(range(self.gen_train_times)):
                     
@@ -300,11 +298,10 @@ class mixed():
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
                 
-                if (i_g+1) % 3000 == 0:
-                    torch.save(self.G.state_dict(), f'./savepoint/mixed_G_iters_{i_g}.pth')
-                    torch.save(self.D.state_dict(), f'./savepoint/mixed_D_iters_{i_g}.pth')
+                torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
+                torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
 
-        return [f'./savepoint/after_hf_G.pth', f'./savepoint/after_hf_D.pth']
+        return [f'./savepoint/mixed_G.pth', f'./savepoint/mixed_D.pth']
 
 Net=mixed(model=WGANGP)
 Net.train()
