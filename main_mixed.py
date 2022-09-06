@@ -17,7 +17,7 @@ from blackwhite_data import bw_data_short as bw
 from human_face_data import humanFace_short as hf
 from bedroom_data import bedroom_short as bd
 
-mixed=ConcatDataset([cat(), cy(), bw(), hf(), bd()])
+mixed=ConcatDataset([cat(), hf(), bd()])
 
 class mixed():
     def __init__(self, dataset=mixed, model=WGANGP) -> None:
@@ -25,7 +25,7 @@ class mixed():
         self.init_channel = 200
         self.batch_size = 64
         self.lr = 0.0001
-        self.gen_train_times = 15000
+        self.gen_train_times = 5000
         self.diss_train_times = 5
         self.params_range = 0.01
         self.b1 = 0
