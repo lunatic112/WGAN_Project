@@ -11,14 +11,14 @@ import model_dcgan as DCGAN
 import model_lsgan as LSGAN
 
 #bed->cat->human->bw->cy
-model=DCGAN
+model=WGANGP
 Net1=bd(model=model)
 Net2=cat(model=model)
 Net3=hf(model=model)
 #Net4=bw(model=model)
 Net5=cy(model=model)
 Net6=mix(model=model)
-Net5.train(Net1.train())
+Net5.train(Net6.train())
 '''
 #cy->bw->human->cat->bed
 model=WGANGP
