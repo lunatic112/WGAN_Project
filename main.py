@@ -18,7 +18,7 @@ Net3=hf(model=model)
 #Net4=bw(model=model)
 Net5=cy(model=model)
 Net6=mix(model=model)
-Net1.train(Net6.train())
+Net5.train(Net1.train())
 '''
 #cy->bw->human->cat->bed
 model=WGANGP
