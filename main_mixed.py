@@ -4,6 +4,7 @@ from torch.autograd import Variable, grad
 import model_gp as WGANGP
 import model_dcgan as DCGAN
 import model_lsgan as LSGAN
+import model_began as BEGAN
 from tqdm import tqdm
 import torchvision
 import matplotlib.pyplot as plt
@@ -32,6 +33,7 @@ class mixed():
         self.b2 = 0.9
         self.lambda_term=10
         self.criterion = nn.BCELoss()
+        self.L1_criterion = nn.L1Loss()
 
         #dataloader
         self.dataset=dataset
@@ -165,10 +167,6 @@ class mixed():
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/hf_iters_{i_g}.jpg', nrow=10)
-
-            #save checkpoint
-            torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
-            torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
         elif self.model==DCGAN:
             for i_g in tqdm(range(self.gen_train_times)):
                     
@@ -232,10 +230,6 @@ class mixed():
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
-
-            #save checkpoint
-            torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
-            torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
         elif self.model==LSGAN:
             for i_g in tqdm(range(self.gen_train_times)):
                     
@@ -299,8 +293,44 @@ class mixed():
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
+        elif self.model==BEGAN:
+            k_t=0
+            #turning models into training mode
+            self.G.train()
+            self.D.train()
+            for i_g in tqdm(range(self.gen_train_times)):
+
+                real_data = self.get_batch().__next__()
+                real_data = Variable(real_data).cuda()
+                z = Variable(torch.randn(self.batch_size,128)).cuda()
+                fake_data = self.G(z)
+
+                self.D.zero_grad()
+                d_loss_real =self.L1_criterion(self.D(real_data),real_data)
+                d_loss_fake =self.L1_criterion(self.D(fake_data.detach()),fake_data.detach())
+                d_loss = d_loss_real - k_t * d_loss_fake
+                d_loss.backward()
+                self.D_optimizer.step()
+
+                self.G.zero_grad()
+                z = Variable(torch.randn(self.batch_size,128)).cuda()
+                fake_data = self.G(z)
+                g_loss = self.L1_criterion(self.D(fake_data),fake_data)
+                g_loss.backward()
+                self.G_optimizer.step()
                 
-            torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
-            torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
+                balance = (0.5 * d_loss_real - d_loss_fake).data[0]
+                k_t = torch.clamp(k_t+0.001*balance, 0, 1).item()
+
+                #progress check every 1000 iters
+                #generate 100 pics from same noise
+                if (i_g+1) % 1000 == 0:
+                    self.G.eval()
+                    fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cy_iters_{i_g}.jpg', nrow=10)
+                    self.G.train()
+
+        torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
+        torch.save(self.D.state_dict(), f'./savepoint/mixed_D.pth')
 
         return [f'./savepoint/mixed_G.pth', f'./savepoint/mixed_D.pth']
