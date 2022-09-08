@@ -51,8 +51,8 @@ class mixed():
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=2e-4, betas=(0.5,0.999))
         self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=2e-4, betas=(0.5,0.999))
-        self.D_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.00008, betas=(0.5,0.9))
-        self.G_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.00008, betas=(0.5,0.9))
+        self.G_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.00008, betas=(0.5,0.9))
+        self.D_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.00008, betas=(0.5,0.9))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 
@@ -332,7 +332,7 @@ class mixed():
                 if (i_g+1) % 1000 == 0:
                     self.G.eval()
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
-                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/cy_iters_{i_g}.jpg', nrow=10)
+                    torchvision.utils.save_image(fake_sample, f'./progress_check/pics/mixed_iters_{i_g}.jpg', nrow=10)
                     self.G.train()
 
         torch.save(self.G.state_dict(), f'./savepoint/mixed_G.pth')
