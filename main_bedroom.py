@@ -23,6 +23,8 @@ class bedroom_model():
         self.b1 = 0
         self.b2 = 0.9
         self.lambda_term=10
+        self.lambda_k=0.001
+        self.Kt=0.5
         self.criterion = nn.BCELoss()
         self.L1_criterion = nn.L1Loss()
 
@@ -286,7 +288,6 @@ class bedroom_model():
                     fake_sample = (self.G(self.check_noise).data + 1) / 2.0     #normalization
                     torchvision.utils.save_image(fake_sample, f'./progress_check/pics/bd_iters_{i_g}.jpg', nrow=10)
         elif self.model==BEGAN:
-            k_t=0
             #turning models into training mode
             self.G.train()
             self.D.train()
@@ -300,7 +301,7 @@ class bedroom_model():
                 self.D.zero_grad()
                 d_loss_real =self.L1_criterion(self.D(real_data),real_data)
                 d_loss_fake =self.L1_criterion(self.D(fake_data.detach()),fake_data.detach())
-                d_loss = d_loss_real - k_t * d_loss_fake
+                d_loss = d_loss_real - self.Kt * d_loss_fake
                 d_loss.backward()
                 self.D_optimizer.step()
 
@@ -312,7 +313,7 @@ class bedroom_model():
                 self.G_optimizer.step()
                 
                 balance = (0.5 * d_loss_real - d_loss_fake).item()
-                k_t = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
+                self.Kt = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
