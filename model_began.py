@@ -59,7 +59,7 @@ class discriminator(nn.Module):
     return x
 
 class generator(nn.Module):
-  def __init__(self):
+  def __init__(self, init_chanel):
     super(generator,self).__init__()
     self.decoder_linear = nn.Linear(h_dim,8*8*gf_dim)
     self.decoder_cnn = decoder_cnn(in_h,c_dim,gf_dim)
