@@ -312,7 +312,7 @@ class bedroom_model():
                 self.G_optimizer.step()
                 
                 balance = (0.5 * d_loss_real - d_loss_fake).item()
-                k_t = torch.clamp(k_t+0.001*balance, 0, 1).item()
+                k_t = max(min(self.Kt + self.lambda_k*balance, 1.0), 0.0)
 
                 #progress check every 1000 iters
                 #generate 100 pics from same noise
