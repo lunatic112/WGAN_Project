@@ -301,6 +301,8 @@ class mixed():
             #turning models into training mode
             self.G.train()
             self.D.train()
+
+            self.check_noise=Variable(torch.randn(self.batch_size,128)).cuda()
             for i_g in tqdm(range(self.gen_train_times)):
 
                 real_data = self.get_batch().__next__()
