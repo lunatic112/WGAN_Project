@@ -6,9 +6,10 @@ from main_mixed import mixed as mix
 import model_gp as WGANGP
 import model_dcgan as DCGAN
 import model_lsgan as LSGAN
+import model_began as BEGAN
 
 #bed->cat->human->bw->cy
-model=WGANGP
+model=BEGAN
 Net1=bd(model=model)
 Net5=cy(model=model)
 Net6=mix(model=model)
