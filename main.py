@@ -9,11 +9,11 @@ import model_lsgan as LSGAN
 import model_began as BEGAN
 
 #bed->cat->human->bw->cy
-model=LSGAN
+model=DCGAN
 Net1=bd(model=model)
 Net5=cy(model=model)
 Net6=mix(model=model)
-Net5.train(Net1.train())
+Net5.train(Net6.train())
 '''
 #cy->bw->human->cat->bed
 model=WGANGP
