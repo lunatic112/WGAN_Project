@@ -13,7 +13,7 @@ model=LSGAN
 Net1=bd(model=model)
 Net5=cy(model=model)
 Net6=mix(model=model)
-Net5.train(Net6.train())
+Net5.train(Net1.train())
 '''
 #cy->bw->human->cat->bed
 model=WGANGP
