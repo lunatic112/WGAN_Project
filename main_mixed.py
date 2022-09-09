@@ -51,8 +51,8 @@ class mixed():
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=2e-4, betas=(0.5,0.999))
         self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=2e-4, betas=(0.5,0.999))
-        self.G_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.001, betas=(0.5,0.9))
-        self.D_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.001, betas=(0.5,0.9))
+        self.G_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.0008, betas=(0.5,0.9))
+        self.D_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.0008, betas=(0.5,0.9))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 

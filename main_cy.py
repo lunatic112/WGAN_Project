@@ -42,8 +42,8 @@ class cy_model():
         self.dis_opt_DC=torch.optim.Adam(self.D.parameters(), lr=self.lr, betas=(0.5,0.999))
         self.gen_opt_LS=torch.optim.Adam(self.G.parameters(), lr=2e-4, betas=(0.5,0.999))
         self.dis_opt_LS=torch.optim.Adam(self.D.parameters(), lr=2e-4, betas=(0.5,0.999))
-        self.G_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.001, betas=(0.5,0.9))
-        self.D_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.001, betas=(0.5,0.9))
+        self.G_optimizer=torch.optim.Adam(self.G.parameters(), lr=0.0008, betas=(0.5,0.9))
+        self.D_optimizer=torch.optim.Adam(self.D.parameters(), lr=0.0008, betas=(0.5,0.9))
 
         self.check_noise = Variable(torch.randn(100, self.init_channel, 1, 1)).cuda()
 
@@ -295,6 +295,10 @@ class cy_model():
             self.check_noise=Variable(torch.randn(100,128)).cuda()
             for i_g in tqdm(range(self.gen_train_times)):
 
+                #enable the gradcomputation of discriminator
+                for p in self.D.parameters():
+                    p.requires_grad=True
+
                 real_data = self.get_batch().__next__()
                 real_data = Variable(real_data).cuda()
                 z = Variable(torch.randn(self.batch_size,128)).cuda()
@@ -306,6 +310,10 @@ class cy_model():
                 d_loss = d_loss_real - self.Kt * d_loss_fake
                 d_loss.backward()
                 self.D_optimizer.step()
+
+                #freeze the grad of discirminator
+                for p in self.D.parameters():
+                    p.requires_grad=False
 
                 self.G.zero_grad()
                 z = Variable(torch.randn(self.batch_size,128)).cuda()
